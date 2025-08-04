@@ -367,13 +367,12 @@
 
         .canvas {
             background: linear-gradient(45deg, #a8e6cf 0%, #dcedc1 100%);
-            border: 3px solid #333;
             border-radius: 5px;
             position: absolute;
             top: 20px;
             left: 20px;
             overflow: visible;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 0 3px #333, 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .canvas::before {
@@ -386,7 +385,7 @@
             background:
                 linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px;
+            background-size: var(--grid-step, 20px) var(--grid-step, 20px);
             pointer-events: none;
             transition: background 0.2s;
         }
@@ -395,15 +394,13 @@
             background:
                 linear-gradient(rgba(255, 255, 255, 0.5) 2px, transparent 2px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.5) 2px, transparent 2px);
-            background-size: 20px 20px;
+            background-size: var(--grid-step, 20px) var(--grid-step, 20px);
         }
         
         .drawing-visuals {
             position: absolute;
             top: 20px; 
             left: 20px;
-            width: 100%;
-            height: 100%;
             pointer-events: none;
             overflow: visible;
         }
@@ -679,7 +676,6 @@
             background:
                 linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-            background-size: 20px 20px;
         }
 
         body.night-mode .placed-element[data-is-light-source="true"] {
@@ -1338,8 +1334,21 @@
                 const pixelWidth = areaData.widthMeters * areaData.pixelsPerMeter;
                 const pixelHeight = areaData.heightMeters * areaData.pixelsPerMeter;
 
+                // Sincronizza la griglia con la scala
+                const gridStep = areaData.pixelsPerMeter / 5; // 5 linee per metro
+                canvas.style.setProperty('--grid-step', gridStep + 'px');
+
                 canvas.style.width = pixelWidth + 'px';
                 canvas.style.height = pixelHeight + 'px';
+
+                // Allinea le dimensioni degli overlay di disegno
+                wallCanvas.style.width = pixelWidth + 'px';
+                wallCanvas.style.height = pixelHeight + 'px';
+                wallLabelsContainer.style.width = pixelWidth + 'px';
+                wallLabelsContainer.style.height = pixelHeight + 'px';
+                measureVisualsElement.style.width = pixelWidth + 'px';
+                measureVisualsElement.style.height = pixelHeight + 'px';
+
                 designWrapper.style.width = (pixelWidth + 40) + 'px'; 
                 designWrapper.style.height = (pixelHeight + 40) + 'px';
                 
