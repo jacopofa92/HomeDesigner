@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <title>Designer Attico J</title>
+    <style>
+        /* --- MODIFICATO --- Stile unificato e migliorato per input della sidebar */
+        .toolbar-section-content input[type="text"],
+        .toolbar-section-content input[type="number"],
+        .toolbar-section-content select {
+            width: 100%;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            background-color: #fff;
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+        
+        .toolbar-section-content input:focus,
+        .toolbar-section-content select:focus {
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.25);
+        }
+
+        #element-manager .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #element-manager #new-element-name {
+            flex-grow: 1;
+        }
+        /* --- FINE MODIFICA --- */
+
+        #element-inspector input[type="number"],
+        #element-inspector input[type="text"],
+        #element-inspector input[type="color"],
+        #element-inspector input[type="checkbox"] {
+            padding: 7px 12px;
+            border: 2px solid #4facfe;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            background: #f8f9fa;
+            transition: border-color 0.2s;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #element-inspector input[type="checkbox"] {
+            width: auto;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        #element-inspector input:focus {
+            border-color: #00f2fe;
+            background: #e3f2fd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #4b69a2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .settings-panel {
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .settings-panel h2 {
+            font-size: 1.5rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        .settings-group, .settings-group-left, .settings-group-center, .settings-group-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .settings-panel label, .settings-panel span {
+            font-weight: 500;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .settings-panel input, .settings-panel select {
+            padding: 5px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.1);
+            color: white;
+            outline: none;
+        }
+        
+        .settings-panel select option {
+            background: #2a3a5a;
+            color: white;
+        }
+
+        #total-cost-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: rgba(0,0,0,0.2);
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+
+        .btn-settings {
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-settings:hover {
+            background: rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+        }
+
+        .workspace {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .toolbar {
+            width: 320px;
+            background: #f8f9fa;
+            border-right: 2px solid #e9ecef;
+            padding: 20px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .toolbar h4 {
+            color: #495057;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .toolbar-section {
+            margin-bottom: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .toolbar-section-header {
+            background-color: #f1f3f4;
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .toolbar-section-header::after {
+            content: '▸';
+            transition: transform 0.3s ease;
+        }
+
+        .toolbar-section.active > .toolbar-section-header::after {
+            transform: rotate(90deg);
+        }
+
+        .toolbar-section-content {
+            display: none;
+            padding: 15px;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .toolbar-section.active > .toolbar-section-content {
+            display: block;
+        }
+        
+        #area-list {
+            list-style: none;
+            padding: 0;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .area-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #e9ecef;
+            background: white;
+            transition: background-color 0.2s, opacity 0.2s, border-top 0.2s, border-bottom 0.2s;
+        }
+
+        .area-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .area-list-item:hover {
+            background-color: #f1f3f4;
+        }
+
+        .area-list-item.active {
+            background-color: #e3f2fd;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        /* --- NUOVO --- Stile per il Drag & Drop delle aree */
+        .area-list-item.dragging {
+            opacity: 0.5;
+            background: #cce5ff;
+        }
+        .area-list-item.drag-over-top {
+            border-top: 2px solid #007bff;
+        }
+        .area-list-item.drag-over-bottom {
+            border-bottom: 2px solid #007bff;
+        }
+        /* --- FINE NUOVO --- */
+
+        .area-item-buttons button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 2px 4px;
+            font-size: 14px;
+        }
+
+        .element-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .element-item {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            cursor: grab;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .element-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-color: #4facfe;
+        }
+
+        .element-item:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+
+        .element-icon {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+
+        .element-name {
+            font-size: 11px;
+            color: #495057;
+            font-weight: 500;
+        }
+        
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            line-height: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .delete-btn:hover {
+            background: #ff4747;
+        }
+        
+        .delete-element-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            line-height: 18px;
+            display: none;
+        }
+        .element-item:hover .delete-element-btn {
+            display: block;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .canvas-container {
+            flex-grow: 1;
+            background: #f1f3f4;
+            position: relative;
+            overflow: auto;
+            padding: 20px;
+        }
+
+        #design-wrapper {
+            position: relative;
+            margin: 20px auto;
+        }
+
+        .canvas {
+            background: linear-gradient(45deg, #a8e6cf 0%, #dcedc1 100%);
+            border: 3px solid #333;
+            border-radius: 5px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            overflow: visible;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .canvas::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            transition: background 0.2s;
+        }
+
+        .canvas.grid-strong::before {
+            background:
+                linear-gradient(rgba(255, 255, 255, 0.5) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.5) 2px, transparent 2px);
+            background-size: 20px 20px;
+        }
+
+        .ruler {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.05);
+            font-size: 10px;
+            color: #333;
+            pointer-events: none;
+            display: flex;
+            z-index: 5;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        #ruler-top {
+            top: 0;
+            left: 20px;
+            height: 20px;
+        }
+
+        #ruler-left {
+            top: 20px;
+            left: 0;
+            width: 20px;
+            flex-direction: column;
+        }
+
+        .ruler-tick {
+            box-sizing: border-box;
+            border-right: 1px solid rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 4px;
+            flex-shrink: 0;
+        }
+
+        #ruler-left .ruler-tick {
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 4px;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+        }
+
+        .placed-element {
+            position: absolute;
+            cursor: move;
+            border: 2px solid transparent;
+            border-radius: 2px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            z-index: 10;
+            user-select: none;
+        }
+        
+        .element-content-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            text-align: center;
+            color: #333;
+            pointer-events: none;
+        }
+        
+        .placed-element.selected {
+            border-color: #ff6b6b !important;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.3) !important;
+        }
+        
+        .resize-handle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff6b6b;
+            border: 2px solid white;
+            border-radius: 50%;
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .placed-element.selected .resize-handle {
+            opacity: 1;
+        }
+
+        .resize-handle.nw { top: -6px; left: -6px; cursor: nwse-resize; }
+        .resize-handle.ne { top: -6px; right: -6px; cursor: nesw-resize; }
+        .resize-handle.sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
+        .resize-handle.se { bottom: -6px; right: -6px; cursor: nwse-resize; }
+        .resize-handle.n { top: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+        .resize-handle.s { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+        .resize-handle.w { top: 50%; left: -6px; transform: translateY(-50%); cursor: ew-resize; }
+        .resize-handle.e { top: 50%; right: -6px; transform: translateY(-50%); cursor: ew-resize; }
+
+        .controls {
+            flex-shrink: 0;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            z-index: 100;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+        }
+        
+        #element-inspector {
+            background-color: #e3f2fd;
+            border: 2px solid #4facfe;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        #element-inspector h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #0d6efd;
+        }
+        #element-inspector label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #495057;
+            display: block;
+            margin-top: 8px;
+        }
+        #element-inspector .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        #element-inspector .info-item {
+            background: #fff;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+        #element-inspector .full-width {
+             grid-column: 1 / -1;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-size: 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #51cf66, #69db7c);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-layer {
+            padding: 5px 10px;
+            font-size: 11px;
+        }
+
+        .canvas-container.view-3d {
+            perspective: 1500px;
+        }
+
+        .canvas-container.view-3d #design-wrapper {
+            transform-style: preserve-3d;
+            box-shadow: 0 50px 80px rgba(0, 0, 0, 0.4);
+            transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+        }
+
+        .canvas-container.view-3d .placed-element {
+            transform: translateZ(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        body.night-mode .canvas {
+            background: linear-gradient(45deg, #2c3e50 0%, #34495e 100%);
+        }
+
+        body.night-mode .canvas::before {
+            background:
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        body.night-mode .placed-element[data-is-light-source="true"] {
+            box-shadow: 0 0 15px 8px rgba(255, 249, 196, 0.7),
+                0 0 3px 1px rgba(255, 255, 255, 0.9) inset;
+        }
+
+        .placed-element.has-image {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-width: 2px;
+            border-style: solid;
+        }
+
+        .placed-element.is-zone {
+            background-color: rgba(79, 172, 254, 0.1);
+            border-style: dashed;
+            border-width: 2px;
+            border-color: #4facfe;
+            box-shadow: none !important; 
+        }
+
+        .zone-name-input {
+            width: 90%;
+            padding: 5px;
+            margin: 0 auto;
+            text-align: center;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            background-color: white;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            outline: none;
+        }
+
+        @media (max-width: 1200px) {
+            .toolbar {
+                width: 280px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                height: auto;
+                min-height: 100vh;
+            }
+
+            .workspace {
+                flex-direction: column;
+            }
+
+            .toolbar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 2px solid #e9ecef;
+                max-height: 40vh;
+                flex-shrink: 0;
+            }
+            
+            .main-content {
+                height: 500px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .settings-panel {
+                justify-content: center;
+            }
+            
+            .controls {
+                position: relative;
+                margin-top: 15px;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="settings-panel">
+            <div class="settings-group-left">
+                <h2>🏠 Designer J</h2>
+                <div class="setting-group">
+                    <label>L(m):</label>
+                    <input type="number" id="width-input" value="10" min="3" max="30" step="0.5" style="width:70px;">
+                </div>
+                <div class="setting-group">
+                    <label>A(m):</label>
+                    <input type="number" id="height-input" value="8.5" min="3" max="30" step="0.5" style="width:70px;">
+                </div>
+                <div class="setting-group">
+                    <label>Area:</label>
+                    <span id="area-display">85 m²</span>
+                </div>
+            </div>
+            
+            <div class="settings-group-center">
+                <div class="setting-group">
+                    <label>Sfondo:</label>
+                    <select id="canvas-bg-select" style="width:150px;">
+                        <option value="#a8e6cf">Prato</option>
+                        <option value="#ffe0b2">Legno chiaro</option>
+                        <option value="#bdbdbd">Piastrelle</option>
+                        <option value="#fffde4">Interno</option>
+                        <option value="#f5f7fa">Moderno</option>
+                        <option value="#f9f9f9">Bianco</option>
+                        <option value="#e0e0e0">Grigio</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Scala (px/m):</label>
+                    <input type="number" id="pixels-meter-input" value="100" min="20" max="500" step="1" style="width:70px;">
+                </div>
+                <div class="setting-group">
+                    <label>Zoom:</label>
+                    <button type="button" id="zoom-out" class="btn-settings">-</button>
+                    <input type="number" id="zoom-value" value="1" min="1" max="4" step="1" style="width:60px;">
+                    <button type="button" id="zoom-in" class="btn-settings">+</button>
+                </div>
+            </div>
+
+            <div class="settings-group-right">
+                <div class="setting-group">
+                    <label>Costo Totale:</label>
+                    <span id="total-cost-display">0.00 €</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="workspace">
+            <div class="toolbar">
+                <div id="element-inspector" style="display: none;"></div>
+
+                <div class="toolbar-section">
+                    <div class="toolbar-section-header">Gestione Aree</div>
+                    <div class="toolbar-section-content" id="area-manager">
+                        <input type="text" id="new-area-name" placeholder="Nome nuova area...">
+                        <button class="btn btn-success" id="add-area-btn" style="width:100%;">Aggiungi Area</button>
+                        <ul id="area-list"></ul>
+                    </div>
+                </div>
+
+                <div class="toolbar-section active">
+                    <div class="toolbar-section-header">Libreria Elementi</div>
+                    <div class="toolbar-section-content" id="dynamic-toolbar-content">
+                    </div>
+                </div>
+
+                <div class="toolbar-section">
+                    <div class="toolbar-section-header">Crea Elementi</div>
+                    <div class="toolbar-section-content" id="element-manager">
+                        <h4>Nuovo gruppo</h4>
+                        <input type="text" id="new-group-name" placeholder="Nome gruppo">
+                        <button class="btn btn-success" id="add-group-btn" style="width:100%;">Aggiungi gruppo</button>
+                        <h4>Nuovo elemento</h4>
+                        <select id="group-select" style="margin-bottom: 10px;"></select>
+                        <div class="input-group">
+                            <input type="text" id="new-element-name" placeholder="Nome elemento">
+                            <select id="new-element-icon-select" style="width: 80px; margin-bottom: 0;"></select>
+                        </div>
+                        <button class="btn btn-primary" id="add-element-btn" style="width:100%; margin-top: 8px;">Aggiungi elemento</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="main-content">
+                <div class="canvas-container" id="canvas-container">
+                    <div id="design-wrapper">
+                        <div id="ruler-top" class="ruler"></div>
+                        <div id="ruler-left" class="ruler"></div>
+                        <div class="canvas" id="canvas"></div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn btn-primary" id="highlight-grid-btn">🟦 Evidenzia griglia</button>
+                    <button class="btn btn-primary" id="clear-all-btn">🗑️ Pulisci</button>
+                    <button class="btn btn-danger" id="delete-selected-btn">❌ Elimina</button>
+                    <button class="btn btn-success" id="duplicate-selected-btn">📋 Duplica</button>
+                    <button class="btn btn-layer btn-success" id="bring-to-front-btn">⬆️ Sopra</button>
+                    <button class="btn btn-layer btn-primary" id="send-to-back-btn">⬇️ Sotto</button>
+                    <button class="btn btn-primary" id="save-image-btn">💾 Salva immagine</button>
+                    <button class="btn btn-primary" id="save-json-btn">💾 Salva progetto</button>
+                    <button class="btn btn-primary" id="load-json-btn">📂 Carica progetto</button>
+                    <input type="file" id="load-json-input" style="display:none;">
+                    <button class="btn btn-primary" id="add-zone-btn">➕ Disegna Zona</button>
+                    <button class="btn btn-primary" id="toggle-3d-btn">🧊 Vista 3D</button>
+                    <button class="btn btn-primary" id="night-mode-btn">🌙 Modalità Notte</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            let aree = [];
+            let currentAreaIndex = -1;
+
+            let selectedElement = null;
+            let dragOffset = { x: 0, y: 0 };
+            let isDragging = false;
+            let isResizing = false;
+            let resizeStart = { x: 0, y: 0, width: 0, height: 0, left: 0, top: 0 };
+            let resizeDirection = '';
+            let elementCounter = 0;
+
+            let isDrawingZone = false;
+            let zoneDrawStart = { x: 0, y: 0 };
+            let currentDrawingZone = null;
+
+            const emojiList = [
+                '❓', '❗', '❤️', '⭐', '✔️', '❌', '➡️', '⬅️', '⬆️', '⬇️', '🔄', '➕', '➖', '⭕', '🔴', '🟠',
+                '🟡', '🟢', '🔵', '🟣', '🟤', '⚫', '⚪', '🟥', '🟧', '🟨', '🟩', '🟦', '🟪', '🟫', '🔶', '🔷',
+                '🔸', '🔹', '🛋️', '🪑', '🛏️', '🍽️', '🏺', '🪞', '🖼️', '🕰️', '🧺', '📚', '🔔', '🎈', '🎁', '🧸', '📦', '🔑',
+                '☕', '🍺', '🍷', '🍸', '🍹', '🍴', '🥄', '🔪', '🍳', '🧊', '🚽', '🚿', '🛁', '🧼', '🪠', '🧻',
+                '🧱', '🪵', '🗿', '🪜', '🌀', '🚪', '🪟', '⬛', '⬜', '🔩', '🔧', '⚙️', '🔗', '📐', '📏', '📌',
+                '🌳', '🌲', '🌴', '🪴', '🌵', '🌿', '☘️', '🍃', '🌸', '🌹', '🌺', '🌻', '🌷', '🍁', '🌊', '💧',
+                '☀️', '🌙', '☁️', '🔥', '💧', '💨', '⛰️', '🌋', '🏖️', '⛲',
+                '🔌', '⚡', '💡', '🔦', '🏮', '📺', '🔊', '🔒', '📹', '📶', '🌐', '📡', '🔋', '💻', '🖥️', '🖱️',
+                '📱', '☎️', '📞', '🔥', '🧯', '🏊‍♀️', '🏄', '🚣', '🧘', '🚶', '🏃', '🧍', '👪', '🐾', '🎨', '⚙️', '📝',
+                '🚗', '🚲', '🛵', '🛹', '🛴', '⛽', '🍕', '🍔', '🍟', '🌭', '🍿', '🧂', '🌶️', '🍞', '🧀', '🥩', '🍗', '🍉', '🍇', '🍋', '🍎', '🍓', '🥕'
+            ];
+
+            const canvas = document.getElementById('canvas');
+            const designWrapper = document.getElementById('design-wrapper');
+            const canvasContainer = document.getElementById('canvas-container');
+            const inspector = document.getElementById('element-inspector');
+            const dynamicToolbarContent = document.getElementById('dynamic-toolbar-content');
+
+
+            document.getElementById('clear-all-btn').addEventListener('click', clearAll);
+            document.getElementById('delete-selected-btn').addEventListener('click', deleteSelected);
+            document.getElementById('duplicate-selected-btn').addEventListener('click', duplicateSelected);
+            document.getElementById('bring-to-front-btn').addEventListener('click', bringToFront);
+            document.getElementById('send-to-back-btn').addEventListener('click', sendToBack);
+
+            document.getElementById('toggle-3d-btn').addEventListener('click', function () {
+                canvasContainer.classList.toggle('view-3d');
+                applyPanAndZoom();
+            });
+
+            document.getElementById('night-mode-btn').addEventListener('click', function () {
+                document.body.classList.toggle('night-mode');
+                this.textContent = document.body.classList.contains('night-mode') ? '☀️ Modalità Giorno' : '🌙 Modalità Notte';
+                document.querySelectorAll('.placed-element').forEach(el => updateLightEffect(el));
+            });
+
+            canvas.addEventListener('dragover', handleDragOver);
+            canvas.addEventListener('drop', handleDrop);
+            canvas.addEventListener('click', handleCanvasClick);
+
+            document.getElementById('width-input').addEventListener('input', function () {
+                if (currentAreaIndex > -1) aree[currentAreaIndex].widthMeters = parseFloat(this.value);
+                updateAreaDisplay();
+                updateCanvasSize();
+            });
+            document.getElementById('height-input').addEventListener('input', function () {
+                if (currentAreaIndex > -1) aree[currentAreaIndex].heightMeters = parseFloat(this.value);
+                updateAreaDisplay();
+                updateCanvasSize();
+            });
+            document.getElementById('pixels-meter-input').addEventListener('input', function (e) {
+                if (currentAreaIndex > -1) aree[currentAreaIndex].pixelsPerMeter = parseInt(e.target.value);
+                updateCanvasSize();
+                document.querySelectorAll('.placed-element').forEach(el => {
+                   updateElementContent(el);
+                });
+            });
+
+            document.getElementById('canvas-bg-select').addEventListener('change', function (e) {
+                if (currentAreaIndex > -1) aree[currentAreaIndex].canvasBackground = e.target.value;
+                canvas.style.background = e.target.value;
+            });
+
+            document.getElementById('save-image-btn').addEventListener('click', function () {
+                deselectAll();
+                
+                setTimeout(() => {
+                    html2canvas(designWrapper, {
+                        backgroundColor: canvas.style.background || null,
+                        scale: 2
+                    }).then(function (canvasImg) {
+                        const link = document.createElement('a');
+                        link.download = `${aree[currentAreaIndex].name.replace(/\s+/g, '_') || 'design'}.png`;
+                        link.href = canvasImg.toDataURL('image/png');
+                        link.click();
+                    });
+                }, 100);
+            });
+
+            document.getElementById('highlight-grid-btn').addEventListener('click', function () {
+                canvas.classList.toggle('grid-strong');
+            });
+
+            document.getElementById('save-json-btn').addEventListener('click', function () {
+                saveCurrentAreaState();
+                
+                const dataToSave = {
+                    aree: aree,
+                    customElementDefinitions: customGroups.filter(g => g.isCustom).map(group => {
+                        return {
+                            name: group.name,
+                            isCustom: true,
+                            elements: group.elements.filter(el => el.isCustom)
+                        };
+                    })
+                };
+
+                const blob = new Blob([JSON.stringify(dataToSave, null, 2)], { type: "application/json" });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = "progetto_aree.json";
+                link.click();
+            });
+
+            document.getElementById('load-json-btn').addEventListener('click', function () {
+                document.getElementById('load-json-input').click();
+            });
+
+            document.getElementById('load-json-input').addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function (evt) {
+                    try {
+                        const data = JSON.parse(evt.target.result);
+                        if (!confirm('Caricare un nuovo progetto cancellerà il lavoro corrente. Continuare?')) {
+                            e.target.value = null;
+                            return;
+                        }
+                        
+                        aree = data.aree || [];
+                        if (aree.length === 0) {
+                            createNewArea("Area Principale", true);
+                        }
+                        
+                        initDefaultGroups();
+                        if (Array.isArray(data.customElementDefinitions)) {
+                            customGroups.push(...data.customElementDefinitions);
+                            renderToolbar();
+                        }
+                        
+                        loadArea(0);
+
+                    } catch (error) {
+                        alert('Errore: il file selezionato non è un progetto valido.');
+                        console.error("Errore nel parsing del JSON:", error);
+                    } finally {
+                        e.target.value = null;
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            let zoom = 1;
+            const zoomInput = document.getElementById('zoom-value');
+            const zoomInBtn = document.getElementById('zoom-in');
+            const zoomOutBtn = document.getElementById('zoom-out');
+
+            function applyZoom() { applyPanAndZoom(); }
+
+            zoomInput.addEventListener('input', function () {
+                zoom = Math.max(0.2, Math.min(3, parseFloat(zoomInput.value) || 1));
+                zoomInput.value = zoom;
+                applyZoom();
+            });
+            zoomInBtn.addEventListener('click', function () {
+                zoom = Math.min(3, zoom + 0.25);
+                zoom = Math.round(zoom * 100) / 100;
+                zoomInput.value = zoom;
+                applyZoom();
+            });
+            zoomOutBtn.addEventListener('click', function () {
+                zoom = Math.max(0.2, zoom - 0.25);
+                zoom = Math.round(zoom * 100) / 100;
+                zoomInput.value = zoom;
+                applyZoom();
+            });
+
+            let isPanning = false;
+            let panStart = { x: 0, y: 0 };
+            let panOffset = { x: 0, y: 0 };
+
+            function applyPanAndZoom() {
+                let transformString = `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoom})`;
+                if (canvasContainer.classList.contains('view-3d')) {
+                    const viewAdjustments = `translateY(20%) scale(0.85)`;
+                    transformString = `rotateX(45deg) rotateZ(-10deg) ${viewAdjustments} ${transformString}`;
+                }
+                designWrapper.style.transform = transformString;
+                designWrapper.style.transformOrigin = "top left";
+            }
+
+            canvasContainer.addEventListener('mousedown', function (e) {
+                if (e.target === canvasContainer) {
+                    isPanning = true;
+                    panStart.x = e.clientX - panOffset.x;
+                    panStart.y = e.clientY - panOffset.y;
+                    canvasContainer.style.cursor = "grabbing";
+                }
+            });
+
+            document.addEventListener('mousemove', function (e) {
+                if (isPanning) {
+                    panOffset.x = e.clientX - panStart.x;
+                    panOffset.y = e.clientY - panStart.y;
+                    applyPanAndZoom();
+                }
+            });
+
+            document.addEventListener('mouseup', function () {
+                if (isPanning) {
+                    isPanning = false;
+                    canvasContainer.style.cursor = "default";
+                }
+            });
+
+            function populateIconSelector() {
+                const select = document.getElementById('new-element-icon-select');
+                select.innerHTML = '';
+                emojiList.forEach(emoji => {
+                    const option = document.createElement('option');
+                    option.value = emoji;
+                    option.textContent = emoji;
+                    select.appendChild(option);
+                });
+            }
+
+            function updateAreaDisplay() {
+                const width = parseFloat(document.getElementById('width-input').value) || 0;
+                const height = parseFloat(document.getElementById('height-input').value) || 0;
+                const area = (width * height).toFixed(1);
+                document.getElementById('area-display').textContent = area + ' m²';
+            }
+
+            function updateRulers(pixelWidth, pixelHeight) {
+                const rulerTop = document.getElementById('ruler-top');
+                const rulerLeft = document.getElementById('ruler-left');
+                rulerTop.innerHTML = '';
+                rulerLeft.innerHTML = '';
+                rulerTop.style.width = pixelWidth + 'px';
+                rulerLeft.style.height = pixelHeight + 'px';
+
+                if (currentAreaIndex < 0) return;
+                const areaData = aree[currentAreaIndex];
+                const pixelsPerMeter = areaData.pixelsPerMeter;
+
+                const fullWidthMeters = Math.floor(areaData.widthMeters);
+                for (let i = 0; i < fullWidthMeters; i++) {
+                    const tick = document.createElement('div');
+                    tick.className = 'ruler-tick';
+                    tick.style.width = pixelsPerMeter + 'px';
+                    tick.textContent = `${i + 1}m`;
+                    rulerTop.appendChild(tick);
+                }
+                const widthRemainder = areaData.widthMeters % 1;
+                if (widthRemainder > 0.01) {
+                    const tick = document.createElement('div');
+                    tick.className = 'ruler-tick';
+                    tick.style.width = (widthRemainder * pixelsPerMeter) + 'px';
+                    rulerTop.appendChild(tick);
+                }
+
+                const fullHeightMeters = Math.floor(areaData.heightMeters);
+                for (let i = 0; i < fullHeightMeters; i++) {
+                    const tick = document.createElement('div');
+                    tick.className = 'ruler-tick';
+                    tick.style.height = pixelsPerMeter + 'px';
+                    tick.textContent = `${i + 1}m`;
+                    rulerLeft.appendChild(tick);
+                }
+                const heightRemainder = areaData.heightMeters % 1;
+                if (heightRemainder > 0.01) {
+                    const tick = document.createElement('div');
+                    tick.className = 'ruler-tick';
+                    tick.style.height = (heightRemainder * pixelsPerMeter) + 'px';
+                    rulerLeft.appendChild(tick);
+                }
+            }
+
+            function updateCanvasSize() {
+                if (currentAreaIndex < 0) return;
+                const areaData = aree[currentAreaIndex];
+                const pixelWidth = areaData.widthMeters * areaData.pixelsPerMeter;
+                const pixelHeight = areaData.heightMeters * areaData.pixelsPerMeter;
+
+                canvas.style.width = pixelWidth + 'px';
+                canvas.style.height = pixelHeight + 'px';
+                designWrapper.style.width = (pixelWidth + 20) + 'px';
+                designWrapper.style.height = (pixelHeight + 20) + 'px';
+                
+                updateRulers(pixelWidth, pixelHeight);
+
+                document.querySelectorAll('.placed-element').forEach(element => {
+                    const x = Math.max(0, Math.min(parseInt(element.style.left), canvas.clientWidth - element.offsetWidth));
+                    const y = Math.max(0, Math.min(parseInt(element.style.top), canvas.clientHeight - element.offsetHeight));
+                    element.style.left = x + 'px';
+                    element.style.top = y + 'px';
+                });
+            }
+
+            function handleDragStart(e) {
+                const elementData = findElementDataByType(e.currentTarget.dataset.type);
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    type: e.currentTarget.dataset.type,
+                    width: parseInt(e.currentTarget.dataset.width),
+                    height: parseInt(e.currentTarget.dataset.height),
+                    cost: elementData?.cost || 0,
+                    isLightSource: elementData?.isLightSource || false,
+                    imageUrl: elementData?.imageUrl || '',
+                    bgColor: elementData?.bgColor || '#ffffff',
+                    lumens: elementData?.lumens || 0
+                }));
+            }
+
+            function handleElementClick(e) {
+                if(e.target.classList.contains('delete-element-btn')) return;
+                if (e.detail === 2) { addElementToCanvas(e.currentTarget); }
+            }
+
+            function handleDragOver(e) { e.preventDefault(); }
+
+            function handleDrop(e) {
+                e.preventDefault();
+                const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                const canvasRect = canvas.getBoundingClientRect();
+                data.left = (e.clientX - canvasRect.left) / zoom;
+                data.top = (e.clientY - canvasRect.top) / zoom;
+                createPlacedElement(data);
+            }
+
+            function addElementToCanvas(toolbarElement) {
+                const elementData = findElementDataByType(toolbarElement.dataset.type);
+                const data = {
+                    type: toolbarElement.dataset.type,
+                    width: parseInt(toolbarElement.dataset.width),
+                    height: parseInt(toolbarElement.dataset.height),
+                    cost: elementData?.cost || 0,
+                    isLightSource: elementData?.isLightSource || false,
+                    imageUrl: elementData?.imageUrl || '',
+                    bgColor: elementData?.bgColor || '#ffffff',
+                    lumens: elementData?.lumens || 0,
+                    left: (canvas.clientWidth / 2) - (parseInt(toolbarElement.dataset.width)/2),
+                    top: (canvas.clientHeight / 2) - (parseInt(toolbarElement.dataset.height)/2),
+                    zIndex: 10
+                };
+                createPlacedElement(data);
+            }
+
+            function createPlacedElement(data) {
+                elementCounter++;
+                const element = document.createElement('div');
+                element.className = 'placed-element';
+                element.dataset.type = data.type;
+                element.dataset.id = `element_${elementCounter}`;
+                element.dataset.cost = data.cost || 0;
+                element.dataset.isLightSource = data.isLightSource || false;
+                element.dataset.imageUrl = data.imageUrl || '';
+                element.dataset.bgColor = data.bgColor || '#ffffff';
+                element.dataset.lumens = data.lumens || 0;
+                element.dataset.isZone = data.isZone || false;
+
+                if (data.isZone) {
+                    element.classList.add('is-zone');
+                    element.dataset.zoneName = data.zoneName || 'Nuova Zona';
+                }
+                
+                let x = parseFloat(data.left);
+                let y = parseFloat(data.top);
+                let width = parseFloat(data.width);
+                let height = parseFloat(data.height);
+
+                const finalWidth = Math.min(width, canvas.clientWidth);
+                const finalHeight = Math.min(height, canvas.clientHeight);
+                x = Math.max(0, Math.min(x, canvas.clientWidth - finalWidth));
+                y = Math.max(0, Math.min(y, canvas.clientHeight - finalHeight));
+
+                element.style.left = x + 'px';
+                element.style.top = y + 'px';
+                element.style.width = finalWidth + 'px';
+                element.style.height = finalHeight + 'px';
+                element.style.zIndex = data.zIndex || 10;
+                
+                const contentWrapper = document.createElement('div');
+                contentWrapper.className = 'element-content-wrapper';
+                element.appendChild(contentWrapper);
+
+                element.addEventListener('mousedown', startDragging);
+                
+                canvas.appendChild(element);
+                
+                applyElementVisuals(element);
+                updateLightEffect(element);
+
+                updateTotalCost();
+            }
+
+            function applyElementVisuals(element) {
+                if (element.dataset.isZone !== 'true') {
+                    const bgColor = element.dataset.bgColor;
+                    const hex = bgColor.replace('#', '');
+                    const r = parseInt(hex.substring(0, 2), 16);
+                    const g = parseInt(hex.substring(2, 4), 16);
+                    const b = parseInt(hex.substring(4, 6), 16);
+                    element.style.backgroundColor = `rgba(${r}, ${g}, ${b}, 0.7)`;
+                    element.style.borderColor = `rgba(${Math.max(0, r - 40)}, ${Math.max(0, g - 40)}, ${Math.max(0, b - 40)}, 0.9)`;
+                }
+                updateElementContent(element);
+            }
+             
+            function updateElementContent(element){
+                const contentWrapper = element.querySelector('.element-content-wrapper');
+                if (!contentWrapper) return;
+                
+                const pixelsPerMeter = aree[currentAreaIndex]?.pixelsPerMeter || 100;
+                
+                if (element.dataset.isZone === 'true') {
+                    const widthM = (element.offsetWidth / pixelsPerMeter);
+                    const heightM = (element.offsetHeight / pixelsPerMeter);
+                    const areaM2 = widthM * heightM;
+                    contentWrapper.innerHTML = `
+                        <div style="font-weight:bold; font-size:14px; padding: 2px;">${element.dataset.zoneName}</div>
+                        <div style="font-size:10px; color:#555;">${widthM.toFixed(2)}m × ${heightM.toFixed(2)}m</div>
+                        <div style="font-size:12px; color:#333;">${areaM2.toFixed(2)} m²</div>
+                    `;
+                    return;
+                }
+
+                if (element.dataset.imageUrl && element.dataset.imageUrl.trim() !== '') {
+                    element.classList.add('has-image');
+                    element.style.backgroundImage = `url(${element.dataset.imageUrl})`;
+                    contentWrapper.innerHTML = '';
+                } else {
+                    element.classList.remove('has-image');
+                    element.style.backgroundImage = 'none';
+                    
+                    const elData = findElementDataByType(element.dataset.type);
+                    const icon = elData?.icon || '❓';
+                    const name = elData?.name || element.dataset.type;
+                    const widthM = (element.offsetWidth / pixelsPerMeter).toFixed(2);
+                    const heightM = (element.offsetHeight / pixelsPerMeter).toFixed(2);
+                    
+                    contentWrapper.innerHTML = `
+                        ${icon}<br>
+                        <span style="font-size: 8px;">${name}</span><br>
+                        <span style="font-size:9px;color:#555;">${widthM}×${heightM}m</span>`;
+                }
+            }
+
+            function startDragging(e) {
+                if (isDrawingZone || e.target.classList.contains('resize-handle')) return;
+                e.stopPropagation();
+                selectElement(e.target.closest('.placed-element'));
+                isDragging = true;
+                const canvasRect = canvas.getBoundingClientRect();
+                let mouseX = (e.clientX - canvasRect.left) / zoom;
+                let mouseY = (e.clientY - canvasRect.top) / zoom;
+                dragOffset.x = mouseX - parseFloat(selectedElement.style.left);
+                dragOffset.y = mouseY - parseFloat(selectedElement.style.top);
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', stopDragging);
+            }
+
+            function handleMouseMove(e) {
+                if (isDragging && selectedElement) {
+                    const canvasRect = canvas.getBoundingClientRect();
+                    let mouseX = (e.clientX - canvasRect.left) / zoom;
+                    let mouseY = (e.clientY - canvasRect.top) / zoom;
+                    let newLeft = mouseX - dragOffset.x;
+                    let newTop = mouseY - dragOffset.y;
+                    const maxX = canvas.clientWidth - selectedElement.offsetWidth;
+                    const maxY = canvas.clientHeight - selectedElement.offsetHeight;
+                    selectedElement.style.left = Math.max(0, Math.min(newLeft, maxX)) + 'px';
+                    selectedElement.style.top = Math.max(0, Math.min(newTop, maxY)) + 'px';
+                    updateInspector(selectedElement);
+                }
+            }
+
+            function stopDragging() {
+                isDragging = false;
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', stopDragging);
+            }
+
+            function startResizing(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                isResizing = true;
+                selectedElement = e.target.closest('.placed-element');
+                resizeDirection = e.target.dataset.direction;
+                
+                const canvasRect = canvas.getBoundingClientRect();
+                resizeStart.x = (e.clientX - canvasRect.left) / zoom;
+                resizeStart.y = (e.clientY - canvasRect.top) / zoom;
+                resizeStart.width = selectedElement.offsetWidth;
+                resizeStart.height = selectedElement.offsetHeight;
+                resizeStart.left = parseFloat(selectedElement.style.left);
+                resizeStart.top = parseFloat(selectedElement.style.top);
+
+                document.addEventListener('mousemove', handleResize);
+                document.addEventListener('mouseup', stopResizing);
+            }
+
+            function handleResize(e) {
+                if (!isResizing || !selectedElement) return;
+                const pixelsPerMeter = aree[currentAreaIndex]?.pixelsPerMeter || 100;
+                const canvasRect = canvas.getBoundingClientRect();
+                let mouseX = (e.clientX - canvasRect.left) / zoom;
+                let mouseY = (e.clientY - canvasRect.top) / zoom;
+                const dx = mouseX - resizeStart.x;
+                const dy = mouseY - resizeStart.y;
+                let newWidth = resizeStart.width;
+                let newHeight = resizeStart.height;
+                let newLeft = resizeStart.left;
+                let newTop = resizeStart.top;
+
+                if (resizeDirection.includes('e')) newWidth = Math.max(20, resizeStart.width + dx);
+                if (resizeDirection.includes('w')) {
+                    newWidth = Math.max(20, resizeStart.width - dx);
+                    newLeft = resizeStart.left + dx;
+                }
+                if (resizeDirection.includes('s')) newHeight = Math.max(20, resizeStart.height + dy);
+                if (resizeDirection.includes('n')) {
+                    newHeight = Math.max(20, resizeStart.height - dy);
+                    newTop = resizeStart.top + dy;
+                }
+                
+                if (newLeft < 0) { newWidth += newLeft; newLeft = 0; }
+                if (newTop < 0) { newHeight += newTop; newTop = 0; }
+                if (newLeft + newWidth > canvas.clientWidth) newWidth = canvas.clientWidth - newLeft;
+                if (newTop + newHeight > canvas.clientHeight) newHeight = canvas.clientHeight - newTop;
+
+                selectedElement.style.left = newLeft + 'px';
+                selectedElement.style.top = newTop + 'px';
+                selectedElement.style.width = newWidth + 'px';
+                selectedElement.style.height = newHeight + 'px';
+                
+                updateElementContent(selectedElement);
+                updateInspector(selectedElement);
+            }
+
+            function stopResizing() {
+                isResizing = false;
+                document.removeEventListener('mousemove', handleResize);
+                document.removeEventListener('mouseup', stopResizing);
+            }
+            
+            function selectElement(target) {
+                if (!target || isDrawingZone) return;
+                if (selectedElement === target) return;
+
+                if (selectedElement) {
+                     selectedElement.classList.remove('selected');
+                     removeResizeHandles(selectedElement);
+                }
+                
+                target.classList.add('selected');
+                addResizeHandles(target);
+                selectedElement = target;
+                updateInspector(target);
+            }
+
+            function addResizeHandles(element) {
+                ['nw', 'ne', 'sw', 'se', 'n', 's', 'w', 'e'].forEach(dir => {
+                    const handle = document.createElement('div');
+                    handle.className = `resize-handle ${dir}`;
+                    handle.dataset.direction = dir;
+                    handle.addEventListener('mousedown', startResizing);
+                    element.appendChild(handle);
+                });
+            }
+
+            function removeResizeHandles(element) {
+                if(element) {
+                    element.querySelectorAll('.resize-handle').forEach(h => h.remove());
+                }
+            }
+            
+            function deselectAll() {
+                 if (selectedElement) {
+                    selectedElement.classList.remove('selected');
+                    removeResizeHandles(selectedElement);
+                    selectedElement = null;
+                    clearInspector();
+                }
+            }
+
+            function handleCanvasClick(e) {
+                if (isDrawingZone) return;
+                const clickedElement = e.target.closest('.placed-element');
+                if (clickedElement) {
+                    selectElement(clickedElement);
+                } else if (e.target === canvas) {
+                   deselectAll();
+                }
+            }
+
+            function deleteSelected() {
+                if (selectedElement) {
+                    selectedElement.remove();
+                    selectedElement = null;
+                    updateTotalCost();
+                    clearInspector();
+                }
+            }
+
+            function duplicateSelected() {
+                if (!selectedElement) return;
+
+                const isZone = selectedElement.dataset.isZone === 'true';
+                const data = {
+                    type: selectedElement.dataset.type,
+                    left: parseInt(selectedElement.style.left) + 20,
+                    top: parseInt(selectedElement.style.top) + 20,
+                    width: selectedElement.offsetWidth,
+                    height: selectedElement.offsetHeight,
+                    zIndex: parseInt(selectedElement.style.zIndex),
+                    cost: isZone ? 0 : selectedElement.dataset.cost,
+                    isLightSource: !isZone && selectedElement.dataset.isLightSource === 'true',
+                    imageUrl: isZone ? '' : selectedElement.dataset.imageUrl,
+                    bgColor: isZone ? '' : selectedElement.dataset.bgColor,
+                    lumens: isZone ? 0 : selectedElement.dataset.lumens,
+                    isZone: isZone,
+                    zoneName: isZone ? `${selectedElement.dataset.zoneName} Copia` : ''
+                };
+                createPlacedElement(data);
+            }
+
+            function bringToFront() {
+                if (selectedElement) {
+                    const elements = Array.from(document.querySelectorAll('.placed-element'));
+                    const maxZ = Math.max(10, ...elements.map(el => parseInt(el.style.zIndex) || 10));
+                    selectedElement.style.zIndex = maxZ + 1;
+                }
+            }
+
+            function sendToBack() {
+                if (selectedElement) {
+                    const elements = Array.from(document.querySelectorAll('.placed-element'));
+                    const minZ = Math.min(10, ...elements.map(el => parseInt(el.style.zIndex) || 10));
+                    selectedElement.style.zIndex = minZ - 1;
+                }
+            }
+
+            function clearAll(confirmFirst = true) {
+                if (confirmFirst && !confirm('Sei sicuro di voler eliminare tutti gli elementi in quest\'area?')) {
+                    return;
+                }
+                canvas.innerHTML = '';
+                deselectAll();
+                updateTotalCost();
+            }
+
+            document.addEventListener('keydown', function (e) {
+                if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') return;
+                if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); deleteSelected(); }
+                else if (e.key === 'd' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); duplicateSelected(); }
+                else if (e.key === 'PageUp' && selectedElement) { e.preventDefault(); bringToFront(); }
+                else if (e.key === 'PageDown' && selectedElement) { e.preventDefault(); sendToBack(); }
+                else if (e.key === 'Escape') { e.preventDefault(); deselectAll(); }
+            });
+            
+            function clearInspector() {
+                inspector.style.display = 'none';
+                inspector.innerHTML = '';
+            }
+            
+            function updateInspector(element) {
+                if (!element) {
+                    clearInspector();
+                    return;
+                }
+
+                inspector.style.display = 'block';
+                const isZone = element.dataset.isZone === 'true';
+                const pixelsPerMeter = aree[currentAreaIndex]?.pixelsPerMeter || 100;
+
+                if (isZone) {
+                    inspector.innerHTML = `
+                        <h4>Zona Selezionata</h4>
+                        <div>
+                            <label for="insp-zone-name">Nome Zona</label>
+                            <input type="text" id="insp-zone-name" value="${element.dataset.zoneName}">
+                        </div>
+                        <div class="info-grid" style="margin-top: 10px;">
+                            <div>
+                                <label for="insp-width">Larghezza (m)</label>
+                                <input type="number" id="insp-width" value="${(element.offsetWidth / pixelsPerMeter).toFixed(2)}" step="0.1" min="0">
+                            </div>
+                            <div>
+                                <label for="insp-height">Altezza (m)</label>
+                                <input type="number" id="insp-height" value="${(element.offsetHeight / pixelsPerMeter).toFixed(2)}" step="0.1" min="0">
+                            </div>
+                        </div>
+                    `;
+
+                    document.getElementById('insp-zone-name').oninput = (e) => {
+                        element.dataset.zoneName = e.target.value;
+                        updateElementContent(element);
+                    };
+                    document.getElementById('insp-width').oninput = (e) => {
+                        let newWidth = parseFloat(e.target.value) * pixelsPerMeter;
+                        if (newWidth > 0) {
+                            const currentLeft = parseFloat(element.style.left);
+                            const maxWidth = canvas.clientWidth - currentLeft;
+                            element.style.width = Math.min(newWidth, maxWidth) + 'px';
+                            updateElementContent(element);
+                        }
+                    };
+                    document.getElementById('insp-height').oninput = (e) => {
+                        let newHeight = parseFloat(e.target.value) * pixelsPerMeter;
+                        if (newHeight > 0) {
+                            const currentTop = parseFloat(element.style.top);
+                            const maxHeight = canvas.clientHeight - currentTop;
+                            element.style.height = Math.min(newHeight, maxHeight) + 'px';
+                            updateElementContent(element);
+                        }
+                    };
+                } else {
+                    const elData = findElementDataByType(element.dataset.type);
+                    const icon = elData?.icon || '❓';
+                    const name = elData?.name || element.dataset.type;
+                    const lightSourceHTML = element.dataset.isLightSource === 'true' ? `
+                        <div>
+                            <label for="insp-lumens">Lumen (lm)</label>
+                            <input type="number" id="insp-lumens" value="${element.dataset.lumens || 0}" step="50" min="0">
+                        </div>
+                    ` : '';
+
+                    inspector.innerHTML = `
+                        <h4>Elemento Selezionato</h4>
+                        <div class="info-grid">
+                            <div class="full-width info-item" style="font-weight:bold; font-size:16px;">${icon} ${name}</div>
+                            <div>
+                                <label for="insp-width">Larghezza (m)</label>
+                                <input type="number" id="insp-width" value="${(element.offsetWidth / pixelsPerMeter).toFixed(2)}" step="0.1" min="0">
+                            </div>
+                            <div>
+                                <label for="insp-height">Altezza (m)</label>
+                                <input type="number" id="insp-height" value="${(element.offsetHeight / pixelsPerMeter).toFixed(2)}" step="0.1" min="0">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="insp-cost">Costo (€)</label>
+                            <input type="number" id="insp-cost" value="${parseFloat(element.dataset.cost).toFixed(2)}" step="1" min="0">
+                        </div>
+                        <div>
+                            <label for="insp-bgcolor">Colore Sfondo</label>
+                            <input type="color" id="insp-bgcolor" value="${element.dataset.bgColor}">
+                        </div>
+                        <div>
+                            <label for="insp-image-url">URL Immagine</label>
+                            <input type="text" id="insp-image-url" placeholder="Incolla URL..." value="${element.dataset.imageUrl || ''}">
+                        </div>
+                        ${lightSourceHTML}
+                        <div style="display: flex; align-items: center;">
+                            <label for="insp-light-source" style="display:inline-block; margin-top:0;">È una fonte di luce?</label>
+                            <input type="checkbox" id="insp-light-source">
+                        </div>
+                    `;
+                    
+                    document.getElementById('insp-width').oninput = (e) => {
+                        let newWidth = parseFloat(e.target.value) * pixelsPerMeter;
+                        if (newWidth > 0) {
+                            const currentLeft = parseFloat(element.style.left);
+                            const maxWidth = canvas.clientWidth - currentLeft;
+                            element.style.width = Math.min(newWidth, maxWidth) + 'px';
+                            updateElementContent(element);
+                        }
+                    };
+                    document.getElementById('insp-height').oninput = (e) => {
+                        let newHeight = parseFloat(e.target.value) * pixelsPerMeter;
+                        if (newHeight > 0) {
+                            const currentTop = parseFloat(element.style.top);
+                            const maxHeight = canvas.clientHeight - currentTop;
+                            element.style.height = Math.min(newHeight, maxHeight) + 'px';
+                            updateElementContent(element);
+                        }
+                    };
+                    document.getElementById('insp-cost').oninput = (e) => {
+                        element.dataset.cost = parseFloat(e.target.value) || 0;
+                        updateTotalCost();
+                    };
+                    document.getElementById('insp-bgcolor').oninput = (e) => {
+                        element.dataset.bgColor = e.target.value;
+                        applyElementVisuals(element);
+                    };
+                    document.getElementById('insp-image-url').onchange = (e) => {
+                        element.dataset.imageUrl = e.target.value.trim();
+                        applyElementVisuals(element);
+                    };
+                    const lightSourceCheckbox = document.getElementById('insp-light-source');
+                    lightSourceCheckbox.checked = element.dataset.isLightSource === 'true';
+                    lightSourceCheckbox.onchange = (e) => {
+                        element.dataset.isLightSource = e.target.checked;
+                        updateInspector(element);
+                        updateLightEffect(element);
+                    };
+                    const lumenInput = document.getElementById('insp-lumens');
+                    if (lumenInput) {
+                        lumenInput.oninput = (e) => {
+                            element.dataset.lumens = parseFloat(e.target.value) || 0;
+                            updateLightEffect(element);
+                        };
+                    }
+                }
+            }
+
+            document.getElementById('add-zone-btn').addEventListener('click', function() {
+                isDrawingZone = true;
+                this.textContent = 'Clicca e trascina per disegnare...';
+                this.classList.add('btn-success');
+                canvas.style.cursor = 'crosshair';
+                deselectAll();
+            });
+
+            canvas.addEventListener('mousedown', function(e) {
+                if (!isDrawingZone || e.target !== canvas) return;
+                e.stopPropagation();
+                const canvasRect = canvas.getBoundingClientRect();
+                zoneDrawStart.x = (e.clientX - canvasRect.left) / zoom;
+                zoneDrawStart.y = (e.clientY - canvasRect.top) / zoom;
+                elementCounter++;
+                currentDrawingZone = document.createElement('div');
+                currentDrawingZone.className = 'placed-element is-zone';
+                currentDrawingZone.style.left = zoneDrawStart.x + 'px';
+                currentDrawingZone.style.top = zoneDrawStart.y + 'px';
+                currentDrawingZone.style.width = '0px';
+                currentDrawingZone.style.height = '0px';
+                currentDrawingZone.dataset.isZone = 'true';
+                currentDrawingZone.dataset.zoneName = 'Nuova Zona';
+                currentDrawingZone.dataset.type = 'zone';
+                currentDrawingZone.dataset.id = `element_${elementCounter}`;
+                canvas.appendChild(currentDrawingZone);
+            }, true);
+
+            document.addEventListener('mousemove', function(e) {
+                if (isDrawingZone && currentDrawingZone) {
+                    const canvasRect = canvas.getBoundingClientRect();
+                    const mouseX = (e.clientX - canvasRect.left) / zoom;
+                    const mouseY = (e.clientY - canvasRect.top) / zoom;
+                    const newWidth = Math.abs(mouseX - zoneDrawStart.x);
+                    const newHeight = Math.abs(mouseY - zoneDrawStart.y);
+                    const newLeft = Math.min(mouseX, zoneDrawStart.x);
+                    const newTop = Math.min(mouseY, zoneDrawStart.y);
+                    currentDrawingZone.style.width = newWidth + 'px';
+                    currentDrawingZone.style.height = newHeight + 'px';
+                    currentDrawingZone.style.left = newLeft + 'px';
+                    currentDrawingZone.style.top = newTop + 'px';
+                }
+            });
+
+            document.addEventListener('mouseup', function(e) {
+                if (!isDrawingZone || !currentDrawingZone) return;
+                if (currentDrawingZone.offsetWidth < 10 || currentDrawingZone.offsetHeight < 10) {
+                    currentDrawingZone.remove();
+                } else {
+                    const contentWrapper = document.createElement('div');
+                    contentWrapper.className = 'element-content-wrapper';
+                    currentDrawingZone.appendChild(contentWrapper);
+                    currentDrawingZone.addEventListener('mousedown', startDragging);
+                    updateElementContent(currentDrawingZone);
+                    selectElement(currentDrawingZone);
+                }
+                const btn = document.getElementById('add-zone-btn');
+                btn.textContent = '➕ Disegna Zona';
+                btn.classList.remove('btn-success');
+                canvas.style.cursor = 'default';
+                isDrawingZone = false;
+                currentDrawingZone = null;
+            });
+            
+            canvas.addEventListener('dblclick', function(e) {
+                const targetZone = e.target.closest('.placed-element.is-zone');
+                if (!targetZone) return;
+                const contentWrapper = targetZone.querySelector('.element-content-wrapper');
+                if (!contentWrapper || contentWrapper.querySelector('input')) return;
+                const currentName = targetZone.dataset.zoneName;
+                contentWrapper.innerHTML = `<input type="text" class="zone-name-input" value="${currentName}" />`;
+                const input = contentWrapper.querySelector('input');
+                input.focus();
+                input.select();
+                const finishEditing = () => {
+                    targetZone.dataset.zoneName = input.value.trim() || 'Zona senza nome';
+                    updateElementContent(targetZone);
+                    input.removeEventListener('blur', finishEditing);
+                    input.removeEventListener('keydown', handleKey);
+                };
+                const handleKey = (ev) => {
+                    if (ev.key === 'Enter') finishEditing();
+                    else if (ev.key === 'Escape') {
+                        input.value = currentName;
+                        finishEditing();
+                    }
+                };
+                input.addEventListener('blur', finishEditing);
+                input.addEventListener('keydown', handleKey);
+            });
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && isDrawingZone) {
+                    if (currentDrawingZone) currentDrawingZone.remove();
+                    const btn = document.getElementById('add-zone-btn');
+                    btn.textContent = '➕ Disegna Zona';
+                    btn.classList.remove('btn-success');
+                    canvas.style.cursor = 'default';
+                    isDrawingZone = false;
+                    currentDrawingZone = null;
+                }
+            });
+
+            let customGroups = [];
+            
+            function findElementDataByType(type) {
+                if (type === 'zone') return null;
+                for (const group of customGroups) {
+                    const found = group.elements.find(el => el.type === type);
+                    if (found) return found;
+                }
+                return null;
+            }
+
+            function initDefaultGroups() {
+                customGroups = [
+                    {
+                        name: "Arredi Base", isCustom: false,
+                        elements: [
+                            { type: "piscina", name: "Piscina", icon: "🏊‍♀️", width: 400, height: 250, bgColor: '#4fc3f7', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "sdraio", name: "Sdraio", icon: "🪑", width: 60, height: 150, bgColor: '#fff9c4', cost: 0, isLightSource: false, isCustom: false },
+                        ]
+                    },
+                    {
+                        name: "Illuminazione", isCustom: false,
+                        elements: [
+                            { type: "lampione", name: "Lampione", icon: "💡", width: 30, height: 30, bgColor: '#fffde7', cost: 0, isLightSource: true, isCustom: false, lumens: 800 },
+                            { type: "faretti", name: "Faretti", icon: "🔦", width: 100, height: 20, bgColor: '#f1f8e9', cost: 0, isLightSource: true, isCustom: false, lumens: 400 },
+                        ]
+                    },
+                     {
+                        name: "Persona", isCustom: false,
+                        elements: [
+                            { type: "persona", name: "Persona", icon: "🧍", width: 55, height: 175, bgColor: '#e0e0e0', cost: 0, isLightSource: false, isCustom: false },
+                        ]
+                    },
+                ];
+            }
+
+            function renderToolbar() {
+                dynamicToolbarContent.innerHTML = '';
+                customGroups.forEach(group => {
+                    const h3 = document.createElement('h4');
+                    h3.textContent = group.name;
+                    dynamicToolbarContent.appendChild(h3);
+
+                    const grid = document.createElement('div');
+                    grid.className = 'element-grid';
+                    group.elements.forEach(el => {
+                        const item = document.createElement('div');
+                        item.className = 'element-item';
+                        item.dataset.type = el.type;
+                        item.dataset.width = el.width;
+                        item.dataset.height = el.height;
+                        item.innerHTML = `<div class="element-icon">${el.icon}</div><div class="element-name">${el.name}</div>`;
+                        item.setAttribute('draggable', 'true');
+                        if (el.isCustom) {
+                           const deleteBtn = document.createElement('button');
+                           deleteBtn.className = 'delete-btn delete-element-btn';
+                           deleteBtn.innerHTML = '🗑️';
+                           deleteBtn.title = 'Elimina elemento';
+                           deleteBtn.dataset.elementType = el.type;
+                           item.appendChild(deleteBtn);
+                        }
+                        item.addEventListener('dragstart', handleDragStart);
+                        item.addEventListener('click', handleElementClick);
+                        grid.appendChild(item);
+                    });
+                    dynamicToolbarContent.appendChild(grid);
+                });
+                updateGroupSelect();
+            }
+            
+            dynamicToolbarContent.addEventListener('click', function(e){
+                e.stopPropagation();
+                const target = e.target;
+                if (target.classList.contains('delete-element-btn')) {
+                    const elementType = target.dataset.elementType;
+                    const elData = findElementDataByType(elementType);
+                    if (confirm(`Sei sicuro di voler eliminare l'elemento "${elData.name}"? Verrà rimosso anche dall'area di lavoro.`)) {
+                        document.querySelectorAll(`.placed-element[data-type="${elementType}"]`).forEach(elOnCanvas => {
+                            if (elOnCanvas === selectedElement) deselectAll();
+                            elOnCanvas.remove();
+                        });
+                        for (const group of customGroups) {
+                            const elIndex = group.elements.findIndex(el => el.type === elementType);
+                            if (elIndex > -1) {
+                                group.elements.splice(elIndex, 1);
+                                break;
+                            }
+                        }
+                        renderToolbar();
+                        updateTotalCost();
+                    }
+                } else if (target.classList.contains('delete-group-btn')) {
+                    const groupName = target.dataset.groupName;
+                    const groupIndex = customGroups.findIndex(g => g.name === groupName);
+                    if (groupIndex > -1) {
+                        const group = customGroups[groupIndex];
+                        if (group.elements.length > 0) {
+                            alert('Non puoi eliminare un gruppo che contiene elementi. Rimuovili prima.');
+                            return;
+                        }
+                        if (confirm(`Sei sicuro di voler eliminare il gruppo "${groupName}"?`)) {
+                            customGroups.splice(groupIndex, 1);
+                            renderToolbar();
+                        }
+                    }
+                }
+            });
+
+            function updateTotalCost() {
+                let totalCost = 0;
+                document.querySelectorAll('.placed-element:not(.is-zone)').forEach(el => {
+                    totalCost += parseFloat(el.dataset.cost) || 0;
+                });
+                document.getElementById('total-cost-display').textContent = `${totalCost.toFixed(2)} €`;
+            }
+
+            function updateLightEffect(element) {
+                element.style.boxShadow = ''; 
+                const isNightMode = document.body.classList.contains('night-mode');
+                const isLightSource = element.dataset.isLightSource === 'true';
+                if (isNightMode && isLightSource) {
+                    const lumens = parseFloat(element.dataset.lumens) || 0;
+                    if (lumens <= 0) return;
+                    const LUMEN_TO_PIXEL_RATIO = 0.15; 
+                    const lightRadius = lumens * LUMEN_TO_PIXEL_RATIO;
+                    const spreadRadius = lightRadius / 3;
+                    const innerGlow = `0 0 ${lightRadius / 2}px ${spreadRadius / 2}px rgba(255, 250, 220, 0.7)`;
+                    const outerGlow = `0 0 ${lightRadius}px ${spreadRadius}px rgba(255, 245, 200, 0.4)`;
+                    element.style.boxShadow = `${innerGlow}, ${outerGlow}`;
+                }
+            }
+
+            function updateGroupSelect() {
+                const select = document.getElementById('group-select');
+                const currentValue = select.value;
+                select.innerHTML = '';
+                customGroups.forEach((group, idx) => {
+                    if (group.isCustom) {
+                       const opt = document.createElement('option');
+                       opt.value = idx;
+                       opt.textContent = group.name;
+                       select.appendChild(opt);
+                    }
+                });
+                select.value = currentValue || (select.options.length > 0 ? select.options[0].value : '');
+            }
+
+            document.getElementById('add-group-btn').addEventListener('click', function () {
+                const name = document.getElementById('new-group-name').value.trim();
+                if (!name) return;
+                if (customGroups.some(g => g.name.toLowerCase() === name.toLowerCase())) {
+                    alert('Un gruppo con questo nome esiste già.');
+                    return;
+                }
+                customGroups.push({ name, elements: [], isCustom: true });
+                renderToolbar();
+                document.getElementById('new-group-name').value = '';
+            });
+
+            document.getElementById('add-element-btn').addEventListener('click', function () {
+                const groupSelect = document.getElementById('group-select');
+                if (!groupSelect.value) {
+                    alert('Devi prima creare un gruppo personalizzato in cui inserire il nuovo elemento.');
+                    return;
+                }
+                const groupIdx = parseInt(groupSelect.value);
+                const name = document.getElementById('new-element-name').value.trim();
+                const icon = document.getElementById('new-element-icon-select').value;
+                if (!name) {
+                    alert('Inserisci un nome per il nuovo elemento.');
+                    return;
+                }
+                const type = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                if (findElementDataByType(type)) {
+                    alert('Un elemento con un nome simile esiste già. Scegli un nome diverso.');
+                    return;
+                }
+                customGroups[groupIdx].elements.unshift({
+                    type, name, icon,
+                    width: 80, height: 80,
+                    isCustom: true,
+                    cost: 0,
+                    bgColor: '#e0e0e0',
+                    imageUrl: '',
+                    isLightSource: false,
+                    lumens: 0
+                });
+                renderToolbar();
+                document.getElementById('new-element-name').value = '';
+            });
+
+            function saveCurrentAreaState() {
+                if (currentAreaIndex < 0) return;
+
+                const currentArea = aree[currentAreaIndex];
+                currentArea.elements = [];
+                document.querySelectorAll('.placed-element').forEach(el => {
+                    currentArea.elements.push({
+                        type: el.dataset.type,
+                        left: el.style.left,
+                        top: el.style.top,
+                        width: el.style.width,
+                        height: el.style.height,
+                        zIndex: parseInt(el.style.zIndex) || 10,
+                        cost: parseFloat(el.dataset.cost) || 0,
+                        isLightSource: el.dataset.isLightSource === 'true',
+                        imageUrl: el.dataset.imageUrl || '',
+                        bgColor: el.dataset.bgColor || '#ffffff',
+                        lumens: parseFloat(el.dataset.lumens) || 0,
+                        isZone: el.dataset.isZone === 'true',
+                        zoneName: el.dataset.zoneName || ''
+                    });
+                });
+            }
+
+            function loadArea(index) {
+                if (index < 0 || index >= aree.length) return;
+                
+                currentAreaIndex = index;
+                const areaData = aree[index];
+
+                document.getElementById('width-input').value = areaData.widthMeters;
+                document.getElementById('height-input').value = areaData.heightMeters;
+                document.getElementById('pixels-meter-input').value = areaData.pixelsPerMeter;
+                document.getElementById('canvas-bg-select').value = areaData.canvasBackground;
+
+                canvas.style.background = areaData.canvasBackground;
+                updateAreaDisplay();
+                updateCanvasSize();
+                clearAll(false);
+
+                if (areaData.elements) {
+                    areaData.elements.forEach(elData => createPlacedElement(elData));
+                }
+                
+                renderAreaList();
+            }
+
+            function renderAreaList() {
+                const list = document.getElementById('area-list');
+                list.innerHTML = '';
+                aree.forEach((area, index) => {
+                    const item = document.createElement('li');
+                    item.className = 'area-list-item';
+                    if (index === currentAreaIndex) {
+                        item.classList.add('active');
+                    }
+                    item.dataset.index = index;
+                    item.setAttribute('draggable', 'true');
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = area.name;
+                    item.appendChild(nameSpan);
+                    
+                    const buttonsDiv = document.createElement('div');
+                    buttonsDiv.className = 'area-item-buttons';
+                    
+                    const renameBtn = document.createElement('button');
+                    renameBtn.textContent = '✏️';
+                    renameBtn.title = 'Rinomina';
+                    renameBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        const newName = prompt('Inserisci il nuovo nome per l\'area:', area.name);
+                        if (newName && newName.trim() !== '') {
+                            aree[index].name = newName.trim();
+                            renderAreaList();
+                        }
+                    };
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = '🗑️';
+                    deleteBtn.title = 'Elimina';
+                    deleteBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        if (aree.length <= 1) {
+                            alert("Non puoi eliminare l'unica area rimasta.");
+                            return;
+                        }
+                        if (confirm(`Sei sicuro di voler eliminare l'area "${area.name}"?`)) {
+                            aree.splice(index, 1);
+                            loadArea(Math.max(0, currentAreaIndex - 1));
+                        }
+                    };
+
+                    buttonsDiv.appendChild(renameBtn);
+                    buttonsDiv.appendChild(deleteBtn);
+                    item.appendChild(buttonsDiv);
+
+                    item.addEventListener('click', () => {
+                        saveCurrentAreaState();
+                        loadArea(index);
+                    });
+                    list.appendChild(item);
+                });
+            }
+
+            function createNewArea(name, load = false) {
+                const newArea = {
+                    name: name,
+                    widthMeters: 10,
+                    heightMeters: 8.5,
+                    pixelsPerMeter: 100,
+                    canvasBackground: '#a8e6cf',
+                    elements: []
+                };
+                aree.push(newArea);
+                if(load) {
+                    loadArea(aree.length - 1);
+                }
+                renderAreaList();
+            }
+
+            document.getElementById('add-area-btn').addEventListener('click', () => {
+                const nameInput = document.getElementById('new-area-name');
+                const name = nameInput.value.trim();
+                if (name) {
+                    saveCurrentAreaState();
+                    createNewArea(name, true);
+                    nameInput.value = '';
+                } else {
+                    alert('Inserisci un nome per la nuova area.');
+                }
+            });
+
+            document.querySelectorAll('.toolbar-section-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const section = header.parentElement;
+                    const isActive = section.classList.contains('active');
+                    
+                    document.querySelectorAll('.toolbar-section').forEach(s => s.classList.remove('active'));
+                    
+                    if (!isActive) {
+                        section.classList.add('active');
+                    }
+                });
+            });
+
+            // --- NUOVO --- Logica per il Drag & Drop delle aree
+            let draggedIndex = null;
+            const areaList = document.getElementById('area-list');
+
+            areaList.addEventListener('dragstart', (e) => {
+                const target = e.target.closest('.area-list-item');
+                if (!target) return;
+                draggedIndex = parseInt(target.dataset.index);
+                e.target.classList.add('dragging');
+            });
+
+            areaList.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const target = e.target.closest('.area-list-item');
+                if (!target) return;
+                
+                document.querySelectorAll('.area-list-item').forEach(item => {
+                    item.classList.remove('drag-over-top', 'drag-over-bottom');
+                });
+                
+                const rect = target.getBoundingClientRect();
+                const offset = e.clientY - rect.top - (rect.height / 2);
+                if (offset < 0) {
+                    target.classList.add('drag-over-top');
+                } else {
+                    target.classList.add('drag-over-bottom');
+                }
+            });
+
+            areaList.addEventListener('dragleave', (e) => {
+                e.target.closest('.area-list-item')?.classList.remove('drag-over-top', 'drag-over-bottom');
+            });
+
+            areaList.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const target = e.target.closest('.area-list-item');
+                if (target === null || draggedIndex === null) return;
+
+                let targetIndex = parseInt(target.dataset.index);
+                const rect = target.getBoundingClientRect();
+                const offset = e.clientY - rect.top - (rect.height / 2);
+
+                const activeAreaName = aree[currentAreaIndex].name;
+                const draggedItem = aree.splice(draggedIndex, 1)[0];
+
+                let newIndex;
+                if (offset < 0) {
+                    // Drop sopra
+                    newIndex = (draggedIndex < targetIndex) ? targetIndex - 1 : targetIndex;
+                } else {
+                    // Drop sotto
+                    newIndex = (draggedIndex < targetIndex) ? targetIndex : targetIndex + 1;
+                }
+                
+                aree.splice(newIndex, 0, draggedItem);
+                
+                // Aggiorna l'indice corrente per puntare alla stessa area di prima
+                currentAreaIndex = aree.findIndex(a => a.name === activeAreaName);
+                renderAreaList();
+            });
+
+            areaList.addEventListener('dragend', (e) => {
+                document.querySelectorAll('.area-list-item').forEach(item => {
+                    item.classList.remove('dragging', 'drag-over-top', 'drag-over-bottom');
+                });
+                draggedIndex = null;
+            });
+            // --- FINE NUOVO ---
+
+            initDefaultGroups();
+            renderToolbar();
+            populateIconSelector();
+            createNewArea("Area Principale", true);
+
+        });
+    </script>
+</body>
+
+</html>
