@@ -20,7 +20,7 @@
             transition: border-color 0.2s, box-shadow 0.2s;
             outline: none;
         }
-        
+
         .toolbar-section-content input:focus,
         .toolbar-section-content select:focus {
             border-color: #4facfe;
@@ -86,7 +86,7 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         .settings-panel {
             background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
             padding: 10px 20px;
@@ -95,7 +95,7 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .settings-panel h2 {
@@ -105,20 +105,25 @@
             color: white;
         }
 
-        .settings-group, .settings-group-left, .settings-group-center, .settings-group-right {
+        .settings-group,
+        .settings-group-left,
+        .settings-group-center,
+        .settings-group-right {
             display: flex;
             align-items: center;
             gap: 15px;
             flex-wrap: wrap;
         }
 
-        .settings-panel label, .settings-panel span {
+        .settings-panel label,
+        .settings-panel span {
             font-weight: 500;
             color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
 
-        .settings-panel input, .settings-panel select {
+        .settings-panel input,
+        .settings-panel select {
             padding: 5px 10px;
             border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 5px;
@@ -126,7 +131,7 @@
             color: white;
             outline: none;
         }
-        
+
         .settings-panel select option {
             background: #2a3a5a;
             color: white;
@@ -135,14 +140,14 @@
         #total-cost-display {
             font-size: 1.2rem;
             font-weight: bold;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
             padding: 5px 12px;
             border-radius: 8px;
         }
 
         .btn-settings {
             padding: 8px 15px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
             border: 1px solid white;
             border-radius: 20px;
@@ -152,7 +157,7 @@
         }
 
         .btn-settings:hover {
-            background: rgba(255,255,255,0.4);
+            background: rgba(255, 255, 255, 0.4);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
         }
@@ -206,7 +211,7 @@
             transition: transform 0.3s ease;
         }
 
-        .toolbar-section.active > .toolbar-section-header::after {
+        .toolbar-section.active>.toolbar-section-header::after {
             transform: rotate(90deg);
         }
 
@@ -216,10 +221,10 @@
             border-top: 1px solid #dee2e6;
         }
 
-        .toolbar-section.active > .toolbar-section-content {
+        .toolbar-section.active>.toolbar-section-content {
             display: block;
         }
-        
+
         #area-list {
             list-style: none;
             padding: 0;
@@ -259,9 +264,11 @@
             opacity: 0.5;
             background: #cce5ff;
         }
+
         .area-list-item.drag-over-top {
             border-top: 2px solid #007bff;
         }
+
         .area-list-item.drag-over-bottom {
             border-bottom: 2px solid #007bff;
         }
@@ -313,7 +320,7 @@
             color: #495057;
             font-weight: 500;
         }
-        
+
         .delete-btn {
             background: #ff6b6b;
             color: white;
@@ -327,10 +334,11 @@
             cursor: pointer;
             transition: background 0.2s;
         }
+
         .delete-btn:hover {
             background: #ff4747;
         }
-        
+
         .delete-element-btn {
             position: absolute;
             top: 4px;
@@ -341,6 +349,7 @@
             line-height: 18px;
             display: none;
         }
+
         .element-item:hover .delete-element-btn {
             display: block;
         }
@@ -396,26 +405,31 @@
                 linear-gradient(90deg, rgba(255, 255, 255, 0.5) 2px, transparent 2px);
             background-size: var(--grid-step, 20px) var(--grid-step, 20px);
         }
-        
+
         .drawing-visuals {
             position: absolute;
-            top: 20px; 
+            top: 20px;
             left: 20px;
             pointer-events: none;
             overflow: visible;
         }
+
         #wall-canvas {
             z-index: 5;
             pointer-events: none;
         }
-        #measure-visuals, #wall-labels-container {
+
+        #measure-visuals,
+        #wall-labels-container {
             z-index: 500;
         }
+
         .drawing-visuals .measure-line {
             stroke: #ff00ff;
             stroke-width: 2;
             stroke-dasharray: 5, 5;
         }
+
         .drawing-visuals .measure-label {
             position: absolute;
             background-color: rgba(255, 0, 255, 0.8);
@@ -427,13 +441,16 @@
             transform: translate(-50%, -120%);
             white-space: nowrap;
         }
+
         .wall-segment {
             stroke: #555;
-            stroke-linecap: butt; /* MODIFICATO */
-            stroke-linejoin: miter; /* MODIFICATO */
+            stroke-linecap: butt;
+            /* MODIFICATO */
+            stroke-linejoin: miter;
+            /* MODIFICATO */
             fill: none;
             transition: stroke 0.2s, stroke-width 0.2s;
-            cursor: pointer; 
+            cursor: pointer;
         }
 
         .wall-segment.selected {
@@ -504,7 +521,7 @@
             z-index: 10;
             user-select: none;
         }
-        
+
         .element-content-wrapper {
             width: 100%;
             height: 100%;
@@ -518,12 +535,12 @@
             color: #333;
             pointer-events: none;
         }
-        
+
         .placed-element.selected {
             border-color: #ff6b6b !important;
             box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.3) !important;
         }
-        
+
         .resize-handle {
             position: absolute;
             width: 10px;
@@ -535,18 +552,62 @@
             opacity: 0;
             transition: opacity 0.2s ease;
         }
+
         .placed-element.selected .resize-handle {
             opacity: 1;
         }
 
-        .resize-handle.nw { top: -6px; left: -6px; cursor: nwse-resize; }
-        .resize-handle.ne { top: -6px; right: -6px; cursor: nesw-resize; }
-        .resize-handle.sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
-        .resize-handle.se { bottom: -6px; right: -6px; cursor: nwse-resize; }
-        .resize-handle.n { top: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
-        .resize-handle.s { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
-        .resize-handle.w { top: 50%; left: -6px; transform: translateY(-50%); cursor: ew-resize; }
-        .resize-handle.e { top: 50%; right: -6px; transform: translateY(-50%); cursor: ew-resize; }
+        .resize-handle.nw {
+            top: -6px;
+            left: -6px;
+            cursor: nwse-resize;
+        }
+
+        .resize-handle.ne {
+            top: -6px;
+            right: -6px;
+            cursor: nesw-resize;
+        }
+
+        .resize-handle.sw {
+            bottom: -6px;
+            left: -6px;
+            cursor: nesw-resize;
+        }
+
+        .resize-handle.se {
+            bottom: -6px;
+            right: -6px;
+            cursor: nwse-resize;
+        }
+
+        .resize-handle.n {
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: ns-resize;
+        }
+
+        .resize-handle.s {
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: ns-resize;
+        }
+
+        .resize-handle.w {
+            top: 50%;
+            left: -6px;
+            transform: translateY(-50%);
+            cursor: ew-resize;
+        }
+
+        .resize-handle.e {
+            top: 50%;
+            right: -6px;
+            transform: translateY(-50%);
+            cursor: ew-resize;
+        }
 
         .controls {
             flex-shrink: 0;
@@ -559,18 +620,18 @@
             justify-content: center;
             align-items: center;
             z-index: 100;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
         }
-        
+
         .control-group {
             display: flex;
             gap: 8px;
             align-items: center;
             padding: 5px;
-            background: rgba(0,0,0,0.05);
+            background: rgba(0, 0, 0, 0.05);
             border-radius: 25px;
         }
-        
+
         #element-inspector {
             background-color: #e3f2fd;
             border: 2px solid #4facfe;
@@ -578,11 +639,13 @@
             padding: 15px;
             margin-bottom: 10px;
         }
+
         #element-inspector h4 {
             margin-top: 0;
             margin-bottom: 10px;
             color: #0d6efd;
         }
+
         #element-inspector label {
             font-size: 12px;
             font-weight: 500;
@@ -590,19 +653,22 @@
             display: block;
             margin-top: 8px;
         }
+
         #element-inspector .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
+
         #element-inspector .info-item {
             background: #fff;
             padding: 4px 8px;
             border-radius: 5px;
             font-size: 13px;
         }
+
         #element-inspector .full-width {
-             grid-column: 1 / -1;
+            grid-column: 1 / -1;
         }
 
         .btn {
@@ -615,7 +681,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             font-size: 14px;
         }
-        
+
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -627,10 +693,10 @@
             background: linear-gradient(45deg, #4facfe, #00f2fe);
             color: white;
         }
-        
+
         .btn-primary.active-tool {
             background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .btn-danger {
@@ -696,7 +762,7 @@
             border-style: dashed;
             border-width: 2px;
             border-color: #4facfe;
-            box-shadow: none !important; 
+            box-shadow: none !important;
         }
 
         .zone-name-input {
@@ -736,7 +802,7 @@
                 max-height: 40vh;
                 flex-shrink: 0;
             }
-            
+
             .main-content {
                 height: 500px;
             }
@@ -746,7 +812,7 @@
             .settings-panel {
                 justify-content: center;
             }
-            
+
             .controls {
                 position: relative;
                 margin-top: 15px;
@@ -763,18 +829,18 @@
                 <h2>🏠 Designer J</h2>
                 <div class="setting-group">
                     <label>L(m):</label>
-                    <input type="number" id="width-input" value="10" min="3" max="30" step="0.5" style="width:70px;">
+                    <input type="number" id="width-input" value="10.90" min="3" max="30" step="0.5" style="width:70px;">
                 </div>
                 <div class="setting-group">
                     <label>A(m):</label>
-                    <input type="number" id="height-input" value="8.5" min="3" max="30" step="0.5" style="width:70px;">
+                    <input type="number" id="height-input" value="7.6" min="3" max="30" step="0.5" style="width:70px;">
                 </div>
                 <div class="setting-group">
                     <label>Area:</label>
                     <span id="area-display">85 m²</span>
                 </div>
             </div>
-            
+
             <div class="settings-group-center">
                 <div class="setting-group">
                     <label>Sfondo:</label>
@@ -790,7 +856,8 @@
                 </div>
                 <div class="setting-group">
                     <label>Scala (px/m):</label>
-                    <input type="number" id="pixels-meter-input" value="100" min="20" max="500" step="1" style="width:70px;">
+                    <input type="number" id="pixels-meter-input" value="100" min="20" max="500" step="1"
+                        style="width:70px;">
                 </div>
                 <div class="setting-group">
                     <label>Zoom:</label>
@@ -853,7 +920,8 @@
                             <input type="text" id="new-element-name" placeholder="Nome elemento">
                             <select id="new-element-icon-select" style="width: 80px; margin-bottom: 0;"></select>
                         </div>
-                        <button class="btn btn-primary" id="add-element-btn" style="width:100%; margin-top: 8px;">Aggiungi elemento</button>
+                        <button class="btn btn-primary" id="add-element-btn"
+                            style="width:100%; margin-top: 8px;">Aggiungi elemento</button>
                     </div>
                 </div>
 
@@ -876,26 +944,30 @@
                         <button class="btn btn-primary" id="undo-btn" disabled title="Annulla (Ctrl+Z)">↩️</button>
                         <button class="btn btn-primary" id="redo-btn" disabled title="Ripristina (Ctrl+Y)">↪️</button>
                     </div>
-                
+
                     <div class="control-group">
                         <button class="btn btn-primary" id="wall-tool-btn" title="Disegna Muro">🧱</button>
                         <button class="btn btn-primary" id="measure-tool-btn" title="Misura Distanza">📏</button>
                         <button class="btn btn-primary" id="add-zone-btn" title="Disegna Zona Rettangolare">➕</button>
                     </div>
-                
+
                     <div class="control-group">
-                        <button class="btn btn-success" id="duplicate-selected-btn" title="Duplica Selezione (Ctrl+D)">📋</button>
-                        <button class="btn btn-layer btn-success" id="bring-to-front-btn" title="Porta Sopra (PageUp)">⬆️</button>
-                        <button class="btn btn-layer btn-primary" id="send-to-back-btn" title="Porta Sotto (PageDown)">⬇️</button>
-                        <button class="btn btn-danger" id="delete-selected-btn" title="Elimina Selezione (Canc)">❌</button>
+                        <button class="btn btn-success" id="duplicate-selected-btn"
+                            title="Duplica Selezione (Ctrl+D)">📋</button>
+                        <button class="btn btn-layer btn-success" id="bring-to-front-btn"
+                            title="Porta Sopra (PageUp)">⬆️</button>
+                        <button class="btn btn-layer btn-primary" id="send-to-back-btn"
+                            title="Porta Sotto (PageDown)">⬇️</button>
+                        <button class="btn btn-danger" id="delete-selected-btn"
+                            title="Elimina Selezione (Canc)">❌</button>
                     </div>
-                    
+
                     <div class="control-group">
                         <button class="btn btn-primary" id="highlight-grid-btn" title="Evidenzia Griglia">🟦</button>
                         <button class="btn btn-primary" id="toggle-3d-btn" title="Vista 3D">🧊</button>
                         <button class="btn btn-primary" id="night-mode-btn" title="Modalità Notte">🌙</button>
                     </div>
-                
+
                     <div class="control-group">
                         <button class="btn btn-primary" id="save-image-btn" title="Salva come Immagine">💾 IMG</button>
                         <button class="btn btn-primary" id="save-json-btn" title="Salva Progetto">💾</button>
@@ -912,6 +984,7 @@
 
             let aree = [];
             let currentAreaIndex = -1;
+            let customGroups = [];
 
             let selectedElement = null;
             let selectedWallId = null;
@@ -926,7 +999,7 @@
             let isDrawingZone = false;
             let zoneDrawStart = { x: 0, y: 0 };
             let currentDrawingZone = null;
-            
+
             let undoStack = [];
             let redoStack = [];
             let isRestoringState = false;
@@ -934,7 +1007,7 @@
             const redoBtn = document.getElementById('redo-btn');
 
             let isMeasuring = false;
-            let measureState = 0; 
+            let measureState = 0;
             let measurePointA = null;
             const measureToolBtn = document.getElementById('measure-tool-btn');
             const measureVisualsElement = document.getElementById('measure-visuals');
@@ -947,7 +1020,7 @@
             const wallLabelsContainer = document.getElementById('wall-labels-container');
             const wallThicknessInput = document.getElementById('wall-thickness-input');
             const wallDrawingModeSelect = document.getElementById('wall-drawing-mode');
-            const wallSnapTolerance = 5; 
+            const wallSnapTolerance = 5;
 
             const emojiList = [
                 '❓', '❗', '❤️', '⭐', '✔️', '❌', '➡️', '⬅️', '⬆️', '⬇️', '🔄', '➕', '➖', '⭕', '🔴', '🟠',
@@ -1006,7 +1079,7 @@
                 updateCanvasSize();
                 drawWalls();
                 document.querySelectorAll('.placed-element').forEach(el => {
-                   updateElementContent(el);
+                    updateElementContent(el);
                 });
             });
 
@@ -1023,9 +1096,9 @@
 
             document.getElementById('save-image-btn').addEventListener('click', function () {
                 deselectAll();
-                toggleMeasureTool(false); 
+                toggleMeasureTool(false);
                 toggleWallTool(false);
-                
+
                 setTimeout(() => {
                     html2canvas(designWrapper, {
                         backgroundColor: canvas.style.background || null,
@@ -1046,7 +1119,7 @@
 
             document.getElementById('save-json-btn').addEventListener('click', function () {
                 saveCurrentAreaState();
-                
+
                 const dataToSave = {
                     aree: aree,
                     customElementDefinitions: customGroups.filter(g => g.isCustom).map(group => {
@@ -1070,7 +1143,7 @@
             });
 
             document.getElementById('load-json-input').addEventListener('change', function (e) {
-                const file = e.target.files;
+                const file = e.target.files[0]; // Get the first file
                 if (!file) return;
                 const reader = new FileReader();
                 reader.onload = function (evt) {
@@ -1080,25 +1153,15 @@
                             e.target.value = null;
                             return;
                         }
-                        
-                        aree = data.aree || [];
-                        if (aree.length === 0) {
-                            createNewArea("Area Principale", true);
-                        }
-                        
-                        initDefaultGroups();
-                        if (Array.isArray(data.customElementDefinitions)) {
-                            customGroups.push(...data.customElementDefinitions);
-                            renderToolbar();
-                        }
-                        
-                        loadArea(0);
+
+                        // CORREZIONE: Funzione dedicata per caricare lo stato completo
+                        loadProjectState(data);
 
                     } catch (error) {
                         alert('Errore: il file selezionato non è un progetto valido.');
                         console.error("Errore nel parsing del JSON:", error);
                     } finally {
-                        e.target.value = null;
+                        e.target.value = null; // Resetta l'input per permettere di ricaricare lo stesso file
                     }
                 };
                 reader.readAsText(file);
@@ -1166,12 +1229,12 @@
                     canvasContainer.style.cursor = "default";
                 }
             });
-            
+
             function recordState() {
                 if (isRestoringState) return;
-                
+
                 const currentState = captureState();
-                
+
                 if (undoStack.length > 0) {
                     const lastState = undoStack[undoStack.length - 1];
                     if (JSON.stringify(lastState) === JSON.stringify(currentState)) {
@@ -1180,7 +1243,7 @@
                 }
 
                 undoStack.push(currentState);
-                redoStack = []; 
+                redoStack = [];
                 updateUndoRedoButtons();
             }
 
@@ -1191,26 +1254,26 @@
                     selectedWallId: selectedWallId
                 }));
             }
-            
+
             function restoreState(stateToRestore) {
                 isRestoringState = true;
-                
+
                 const wallIdBeingEdited = currentWallId;
-                
+
                 const areaState = { ...stateToRestore };
                 delete areaState.selectedWallId;
                 aree[currentAreaIndex] = JSON.parse(JSON.stringify(areaState));
 
                 loadArea(currentAreaIndex, false);
-                
+
                 selectedWallId = stateToRestore.selectedWallId || null;
 
                 if (wallIdBeingEdited && !isDrawingWall) {
                     const restoredWall = aree[currentAreaIndex].walls.find(w => w.id === wallIdBeingEdited);
-                    
+
                     if (restoredWall && restoredWall.points.length > 0) {
                         currentWallPoints = restoredWall.points;
-                        currentWallId = restoredWall.id; 
+                        currentWallId = restoredWall.id;
                         isDrawingWall = true;
                         document.addEventListener('mousemove', handleWallMove);
                     } else {
@@ -1221,25 +1284,25 @@
                 drawWalls();
                 isRestoringState = false;
             }
-            
+
             function undo() {
                 if (undoStack.length <= 1) return;
-                
+
                 redoStack.push(undoStack.pop());
-                
+
                 const stateToRestore = undoStack[undoStack.length - 1];
                 restoreState(stateToRestore);
-                
+
                 updateUndoRedoButtons();
             }
-            
+
             function redo() {
                 if (redoStack.length === 0) return;
 
                 const stateToRestore = redoStack.pop();
                 undoStack.push(stateToRestore);
                 restoreState(stateToRestore);
-                
+
                 updateUndoRedoButtons();
             }
 
@@ -1349,9 +1412,9 @@
                 measureVisualsElement.style.width = pixelWidth + 'px';
                 measureVisualsElement.style.height = pixelHeight + 'px';
 
-                designWrapper.style.width = (pixelWidth + 40) + 'px'; 
+                designWrapper.style.width = (pixelWidth + 40) + 'px';
                 designWrapper.style.height = (pixelHeight + 40) + 'px';
-                
+
                 updateRulers(pixelWidth, pixelHeight);
 
                 document.querySelectorAll('.placed-element').forEach(element => {
@@ -1377,9 +1440,9 @@
             }
 
             function handleElementClick(e) {
-                if(e.target.classList.contains('delete-element-btn')) return;
-                if (e.detail === 2) { 
-                    addElementToCanvas(e.currentTarget); 
+                if (e.target.classList.contains('delete-element-btn')) return;
+                if (e.detail === 2) {
+                    addElementToCanvas(e.currentTarget);
                     recordState();
                 }
             }
@@ -1407,8 +1470,8 @@
                     imageUrl: elementData?.imageUrl || '',
                     bgColor: elementData?.bgColor || '#ffffff',
                     lumens: elementData?.lumens || 0,
-                    left: (canvas.clientWidth / 2) - (parseInt(toolbarElement.dataset.width)/2),
-                    top: (canvas.clientHeight / 2) - (parseInt(toolbarElement.dataset.height)/2),
+                    left: (canvas.clientWidth / 2) - (parseInt(toolbarElement.dataset.width) / 2),
+                    top: (canvas.clientHeight / 2) - (parseInt(toolbarElement.dataset.height) / 2),
                     zIndex: 10
                 };
                 createPlacedElement(data);
@@ -1431,7 +1494,7 @@
                     element.classList.add('is-zone');
                     element.dataset.zoneName = data.zoneName || 'Nuova Zona';
                 }
-                
+
                 let x = parseFloat(data.left);
                 let y = parseFloat(data.top);
                 let width = parseFloat(data.width) || parseFloat(data.style?.width) || 80;
@@ -1447,15 +1510,15 @@
                 element.style.width = finalWidth + 'px';
                 element.style.height = finalHeight + 'px';
                 element.style.zIndex = data.zIndex || 10;
-                
+
                 const contentWrapper = document.createElement('div');
                 contentWrapper.className = 'element-content-wrapper';
                 element.appendChild(contentWrapper);
 
                 element.addEventListener('mousedown', startDragging);
-                
+
                 canvas.appendChild(element);
-                
+
                 applyElementVisuals(element);
                 updateLightEffect(element);
 
@@ -1474,22 +1537,22 @@
                 }
                 updateElementContent(element);
             }
-             
-            function updateElementContent(element){
+
+            function updateElementContent(element) {
                 const contentWrapper = element.querySelector('.element-content-wrapper');
                 if (!contentWrapper) return;
-                
+
                 const pixelsPerMeter = aree[currentAreaIndex]?.pixelsPerMeter || 100;
-                
+
                 if (element.dataset.isZone === 'true') {
                     const widthM = (element.offsetWidth / pixelsPerMeter);
                     const heightM = (element.offsetHeight / pixelsPerMeter);
                     const areaM2 = widthM * heightM;
                     contentWrapper.innerHTML = `
-                        <div style="font-weight:bold; font-size:14px; padding: 2px;">${element.dataset.zoneName}</div>
-                        <div style="font-size:10px; color:#555;">${widthM.toFixed(2)}m × ${heightM.toFixed(2)}m</div>
-                        <div style="font-size:12px; color:#333;">${areaM2.toFixed(2)} m²</div>
-                    `;
+                    <div style="font-weight:bold; font-size:14px; padding: 2px;">${element.dataset.zoneName}</div>
+                    <div style="font-size:10px; color:#555;">${widthM.toFixed(2)}m × ${heightM.toFixed(2)}m</div>
+                    <div style="font-size:12px; color:#333;">${areaM2.toFixed(2)} m²</div>
+                `;
                     return;
                 }
 
@@ -1500,17 +1563,17 @@
                 } else {
                     element.classList.remove('has-image');
                     element.style.backgroundImage = 'none';
-                    
+
                     const elData = findElementDataByType(element.dataset.type);
                     const icon = elData?.icon || '❓';
                     const name = elData?.name || element.dataset.type;
                     const widthM = (element.offsetWidth / pixelsPerMeter).toFixed(2);
                     const heightM = (element.offsetHeight / pixelsPerMeter).toFixed(2);
-                    
+
                     contentWrapper.innerHTML = `
-                        ${icon}<br>
-                        <span style="font-size: 8px;">${name}</span><br>
-                        <span style="font-size:9px;color:#555;">${widthM}×${heightM}m</span>`;
+                    ${icon}<br>
+                    <span style="font-size: 8px;">${name}</span><br>
+                    <span style="font-size:9px;color:#555;">${widthM}×${heightM}m</span>`;
                 }
             }
 
@@ -1547,7 +1610,7 @@
             function stopDragging() {
                 if (isDragging) {
                     isDragging = false;
-                    recordState(); 
+                    recordState();
                     document.removeEventListener('mousemove', handleMouseMove);
                     document.removeEventListener('mouseup', stopDragging);
                 }
@@ -1560,7 +1623,7 @@
                 isResizing = true;
                 selectedElement = e.target.closest('.placed-element');
                 resizeDirection = e.target.dataset.direction;
-                
+
                 const canvasRect = canvas.getBoundingClientRect();
                 resizeStart.x = (e.clientX - canvasRect.left) / zoom;
                 resizeStart.y = (e.clientY - canvasRect.top) / zoom;
@@ -1595,7 +1658,7 @@
                     newHeight = Math.max(20, resizeStart.height - dy);
                     newTop = resizeStart.top + dy;
                 }
-                
+
                 if (newLeft < 0) { newWidth += newLeft; newLeft = 0; }
                 if (newTop < 0) { newHeight += newTop; newTop = 0; }
                 if (newLeft + newWidth > canvas.clientWidth) newWidth = canvas.clientWidth - newLeft;
@@ -1605,7 +1668,7 @@
                 selectedElement.style.top = newTop + 'px';
                 selectedElement.style.width = newWidth + 'px';
                 selectedElement.style.height = newHeight + 'px';
-                
+
                 updateElementContent(selectedElement);
                 updateInspector(selectedElement);
             }
@@ -1613,24 +1676,24 @@
             function stopResizing() {
                 if (isResizing) {
                     isResizing = false;
-                    recordState(); 
+                    recordState();
                     document.removeEventListener('mousemove', handleResize);
                     document.removeEventListener('mouseup', stopResizing);
                 }
             }
-            
+
             function selectElement(target) {
                 if (!target || isDrawingZone || isMeasuring || isDrawingWall) return;
                 if (selectedElement === target) return;
 
                 deselectAll(); // Deseleziona tutto, inclusi i muri
-                
+
                 target.classList.add('selected');
                 addResizeHandles(target);
                 selectedElement = target;
                 updateInspector(target);
             }
-            
+
             function selectWall(wallId) {
                 if (selectedWallId === wallId) return;
                 deselectAll(); // Deseleziona tutto, inclusi gli elementi
@@ -1650,13 +1713,13 @@
             }
 
             function removeResizeHandles(element) {
-                if(element) {
+                if (element) {
                     element.querySelectorAll('.resize-handle').forEach(h => h.remove());
                 }
             }
-            
+
             function deselectAll() {
-                 if (selectedElement) {
+                if (selectedElement) {
                     selectedElement.classList.remove('selected');
                     removeResizeHandles(selectedElement);
                     selectedElement = null;
@@ -1692,7 +1755,7 @@
                 if (wallToSelect) {
                     selectWall(wallToSelect);
                 } else {
-                   deselectAll();
+                    deselectAll();
                 }
             }
 
@@ -1785,7 +1848,7 @@
 
             document.addEventListener('keydown', function (e) {
                 if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') return;
-                
+
                 if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
                     e.preventDefault();
                     if (undoBtn.disabled) return;
@@ -1795,29 +1858,29 @@
                     if (redoBtn.disabled) return;
                     redo();
                 }
-                
+
                 else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); deleteSelected(); }
                 else if (e.key === 'd' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); duplicateSelected(); }
                 else if (e.key === 'PageUp' && selectedElement) { e.preventDefault(); bringToFront(); }
                 else if (e.key === 'PageDown' && selectedElement) { e.preventDefault(); sendToBack(); }
-                else if (e.key === 'Escape') { 
+                else if (e.key === 'Escape') {
                     e.preventDefault();
                     if (isDrawingWall) {
                         finishCurrentWall(false);
                         undo(); // Rimuove lo stato iniziale del disegno del muro
                     } else if (isMeasuring) {
-                        toggleMeasureTool(false); 
+                        toggleMeasureTool(false);
                     } else {
                         deselectAll();
                     }
                 }
             });
-            
+
             function clearInspector() {
                 inspector.style.display = 'none';
                 inspector.innerHTML = '';
             }
-            
+
             function updateInspector(element) {
                 if (!element) {
                     clearInspector();
@@ -1830,26 +1893,26 @@
 
                 if (isZone) {
                     inspector.innerHTML = `
-                        <h4>Zona Selezionata</h4>
+                    <h4>Zona Selezionata</h4>
+                    <div>
+                        <label for="insp-zone-name">Nome Zona</label>
+                        <input type="text" id="insp-zone-name" value="${element.dataset.zoneName}">
+                    </div>
+                    <div class="info-grid" style="margin-top: 10px;">
                         <div>
-                            <label for="insp-zone-name">Nome Zona</label>
-                            <input type="text" id="insp-zone-name" value="${element.dataset.zoneName}">
+                            <label for="insp-width">Larghezza (m)</label>
+                            <input type="number" id="insp-width" value="${(element.offsetWidth / pixelsPerMeter).toFixed(2)}" step="0.1" min="0">
                         </div>
-                        <div class="info-grid" style="margin-top: 10px;">
-                            <div>
-                                <label for="insp-width">Larghezza (m)</label>
-                                <input type="number" id="insp-width" value="${(element.offsetWidth / pixelsPerMeter).toFixed(2)}" step="0.1" min="0">
-                            </div>
-                            <div>
-                                <label for="insp-height">Altezza (m)</label>
-                                <input type="number" id="insp-height" value="${(element.offsetHeight / pixelsPerMeter).toFixed(2)}" step="0.1" min="0">
-                            </div>
+                        <div>
+                            <label for="insp-height">Altezza (m)</label>
+                            <input type="number" id="insp-height" value="${(element.offsetHeight / pixelsPerMeter).toFixed(2)}" step="0.1" min="0">
                         </div>
-                    `;
+                    </div>
+                `;
 
                     const nameInput = document.getElementById('insp-zone-name');
                     nameInput.oninput = (e) => { element.dataset.zoneName = e.target.value; updateElementContent(element); };
-                    
+
                     const widthInput = document.getElementById('insp-width');
                     widthInput.oninput = (e) => {
                         let newWidth = parseFloat(e.target.value) * pixelsPerMeter;
@@ -1863,8 +1926,8 @@
                     heightInput.oninput = (e) => {
                         let newHeight = parseFloat(e.target.value) * pixelsPerMeter;
                         if (newHeight > 0) {
-                           element.style.height = Math.min(newHeight, canvas.clientHeight - parseFloat(element.style.top)) + 'px';
-                           updateElementContent(element);
+                            element.style.height = Math.min(newHeight, canvas.clientHeight - parseFloat(element.style.top)) + 'px';
+                            updateElementContent(element);
                         }
                     };
 
@@ -1877,44 +1940,44 @@
                     const icon = elData?.icon || '❓';
                     const name = elData?.name || element.dataset.type;
                     const lightSourceHTML = element.dataset.isLightSource === 'true' ? `
-                        <div>
-                            <label for="insp-lumens">Lumen (lm)</label>
-                            <input type="number" id="insp-lumens" value="${element.dataset.lumens || 0}" step="50" min="0">
-                        </div>
-                    ` : '';
+                    <div>
+                        <label for="insp-lumens">Lumen (lm)</label>
+                        <input type="number" id="insp-lumens" value="${element.dataset.lumens || 0}" step="50" min="0">
+                    </div>
+                ` : '';
 
                     inspector.innerHTML = `
-                        <h4>Elemento Selezionato</h4>
-                        <div class="info-grid">
-                            <div class="full-width info-item" style="font-weight:bold; font-size:16px;">${icon} ${name}</div>
-                            <div>
-                                <label for="insp-width">Larghezza (m)</label>
-                                <input type="number" id="insp-width" value="${(element.offsetWidth / pixelsPerMeter).toFixed(2)}" step="0.1" min="0">
-                            </div>
-                            <div>
-                                <label for="insp-height">Altezza (m)</label>
-                                <input type="number" id="insp-height" value="${(element.offsetHeight / pixelsPerMeter).toFixed(2)}" step="0.1" min="0">
-                            </div>
+                    <h4>Elemento Selezionato</h4>
+                    <div class="info-grid">
+                        <div class="full-width info-item" style="font-weight:bold; font-size:16px;">${icon} ${name}</div>
+                        <div>
+                            <label for="insp-width">Larghezza (m)</label>
+                            <input type="number" id="insp-width" value="${(element.offsetWidth / pixelsPerMeter).toFixed(2)}" step="0.1" min="0">
                         </div>
                         <div>
-                            <label for="insp-cost">Costo (€)</label>
-                            <input type="number" id="insp-cost" value="${parseFloat(element.dataset.cost).toFixed(2)}" step="1" min="0">
+                            <label for="insp-height">Altezza (m)</label>
+                            <input type="number" id="insp-height" value="${(element.offsetHeight / pixelsPerMeter).toFixed(2)}" step="0.1" min="0">
                         </div>
-                        <div>
-                            <label for="insp-bgcolor">Colore Sfondo</label>
-                            <input type="color" id="insp-bgcolor" value="${element.dataset.bgColor}">
-                        </div>
-                        <div>
-                            <label for="insp-image-url">URL Immagine</label>
-                            <input type="text" id="insp-image-url" placeholder="Incolla URL..." value="${element.dataset.imageUrl || ''}">
-                        </div>
-                        ${lightSourceHTML}
-                        <div style="display: flex; align-items: center;">
-                            <label for="insp-light-source" style="display:inline-block; margin-top:0;">È una fonte di luce?</label>
-                            <input type="checkbox" id="insp-light-source">
-                        </div>
-                    `;
-                    
+                    </div>
+                    <div>
+                        <label for="insp-cost">Costo (€)</label>
+                        <input type="number" id="insp-cost" value="${parseFloat(element.dataset.cost).toFixed(2)}" step="1" min="0">
+                    </div>
+                    <div>
+                        <label for="insp-bgcolor">Colore Sfondo</label>
+                        <input type="color" id="insp-bgcolor" value="${element.dataset.bgColor}">
+                    </div>
+                    <div>
+                        <label for="insp-image-url">URL Immagine</label>
+                        <input type="text" id="insp-image-url" placeholder="Incolla URL..." value="${element.dataset.imageUrl || ''}">
+                    </div>
+                    ${lightSourceHTML}
+                    <div style="display: flex; align-items: center;">
+                        <label for="insp-light-source" style="display:inline-block; margin-top:0;">È una fonte di luce?</label>
+                        <input type="checkbox" id="insp-light-source">
+                    </div>
+                `;
+
                     const widthInput = document.getElementById('insp-width');
                     widthInput.oninput = (e) => {
                         let newWidth = parseFloat(e.target.value) * pixelsPerMeter;
@@ -1941,7 +2004,7 @@
 
                     const imageUrlInput = document.getElementById('insp-image-url');
                     imageUrlInput.onchange = (e) => { element.dataset.imageUrl = e.target.value.trim(); applyElementVisuals(element); };
-                     
+
                     const lightSourceCheckbox = document.getElementById('insp-light-source');
                     lightSourceCheckbox.checked = element.dataset.isLightSource === 'true';
                     lightSourceCheckbox.onchange = (e) => {
@@ -1955,7 +2018,7 @@
                         lumenInput.oninput = (e) => { element.dataset.lumens = parseFloat(e.target.value) || 0; updateLightEffect(element); };
                         addUndoRedoToInput(lumenInput);
                     }
-                    
+
                     addUndoRedoToInput(widthInput);
                     addUndoRedoToInput(heightInput);
                     addUndoRedoToInput(costInput);
@@ -1965,7 +2028,7 @@
                 }
             }
 
-            document.getElementById('add-zone-btn').addEventListener('click', function() {
+            document.getElementById('add-zone-btn').addEventListener('click', function () {
                 toggleWallTool(false);
                 toggleMeasureTool(false);
                 isDrawingZone = true;
@@ -1974,10 +2037,10 @@
                 deselectAll();
             });
 
-            canvas.addEventListener('mousedown', function(e) {
+            canvas.addEventListener('mousedown', function (e) {
                 if (!isDrawingZone || e.target !== canvas) return;
                 e.stopPropagation();
-                
+
                 recordState();
                 const canvasRect = canvas.getBoundingClientRect();
                 const mouseX = (e.clientX - canvasRect.left) / zoom;
@@ -1998,7 +2061,7 @@
                 canvas.appendChild(currentDrawingZone);
             }, true);
 
-            document.addEventListener('mousemove', function(e) {
+            document.addEventListener('mousemove', function (e) {
                 if (isDrawingZone && currentDrawingZone) {
                     const canvasRect = canvas.getBoundingClientRect();
                     const mouseX = (e.clientX - canvasRect.left) / zoom;
@@ -2014,12 +2077,12 @@
                 }
             });
 
-            document.addEventListener('mouseup', function(e) {
+            document.addEventListener('mouseup', function (e) {
                 if (!isDrawingZone || !currentDrawingZone) return;
-                
+
                 if (currentDrawingZone.offsetWidth < 10 || currentDrawingZone.offsetHeight < 10) {
                     currentDrawingZone.remove();
-                    undo(); 
+                    undo();
                 } else {
                     const contentWrapper = document.createElement('div');
                     contentWrapper.className = 'element-content-wrapper';
@@ -2035,11 +2098,11 @@
                 isDrawingZone = false;
                 currentDrawingZone = null;
             });
-            
-            canvas.addEventListener('dblclick', function(e) {
+
+            canvas.addEventListener('dblclick', function (e) {
                 const targetZone = e.target.closest('.placed-element.is-zone');
                 if (!targetZone) return;
-                
+
                 const contentWrapper = targetZone.querySelector('.element-content-wrapper');
                 if (!contentWrapper || contentWrapper.querySelector('input')) return;
                 const currentName = targetZone.dataset.zoneName;
@@ -2065,8 +2128,8 @@
                 input.addEventListener('blur', finishEditing);
                 input.addEventListener('keydown', handleKey);
             });
-            
-            document.addEventListener('keydown', function(e) {
+
+            document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape' && isDrawingZone) {
                     if (currentDrawingZone) currentDrawingZone.remove();
                     const btn = document.getElementById('add-zone-btn');
@@ -2081,9 +2144,9 @@
             function toggleMeasureTool(forceState = null) {
                 const wasMeasuring = isMeasuring;
                 isMeasuring = forceState !== null ? forceState : !isMeasuring;
-                
+
                 if (isMeasuring) {
-                    if (!wasMeasuring) toggleWallTool(false); 
+                    if (!wasMeasuring) toggleWallTool(false);
                     measureToolBtn.classList.add('active-tool');
                     canvas.style.cursor = 'crosshair';
                     deselectAll();
@@ -2100,7 +2163,7 @@
             function clearMeasurementVisuals() {
                 measureVisualsElement.innerHTML = '';
             }
-            
+
             function handleMeasureClick(e) {
                 e.stopPropagation();
                 const canvasRect = canvas.getBoundingClientRect();
@@ -2108,19 +2171,19 @@
                     x: (e.clientX - canvasRect.left) / zoom,
                     y: (e.clientY - canvasRect.top) / zoom
                 };
-                
-                if (measureState === 0 || measureState === 2) { 
+
+                if (measureState === 0 || measureState === 2) {
                     clearMeasurementVisuals();
                     measurePointA = clickPos;
                     measureState = 1;
                     document.addEventListener('mousemove', handleMeasureMove);
-                } else if (measureState === 1) { 
+                } else if (measureState === 1) {
                     document.removeEventListener('mousemove', handleMeasureMove);
                     handleMeasureMove(e);
                     measureState = 2;
                 }
             }
-            
+
             function handleMeasureMove(e) {
                 if (!measurePointA) return;
                 const canvasRect = canvas.getBoundingClientRect();
@@ -2128,21 +2191,21 @@
                     x: (e.clientX - canvasRect.left) / zoom,
                     y: (e.clientY - canvasRect.top) / zoom
                 };
-                
+
                 const distancePx = Math.hypot(currentPos.x - measurePointA.x, currentPos.y - measurePointA.y);
                 const pixelsPerMeter = aree[currentAreaIndex]?.pixelsPerMeter || 100;
                 const distanceMeters = (distancePx / pixelsPerMeter).toFixed(2);
-                
+
                 drawMeasurementLine(measurePointA, currentPos, distanceMeters);
             }
-            
+
             function drawMeasurementLine(pointA, pointB, distance) {
                 clearMeasurementVisuals();
                 const svgNS = 'http://www.w3.org/2000/svg';
                 const svg = document.createElementNS(svgNS, 'svg');
                 svg.style.width = '100%';
                 svg.style.height = '100%';
-                
+
                 const line = document.createElementNS(svgNS, 'line');
                 line.setAttribute('x1', pointA.x);
                 line.setAttribute('y1', pointA.y);
@@ -2150,7 +2213,7 @@
                 line.setAttribute('y2', pointB.y);
                 line.classList.add('measure-line');
                 svg.appendChild(line);
-                
+
                 const label = document.createElement('div');
                 label.className = 'measure-label';
                 label.textContent = `${distance} m`;
@@ -2162,14 +2225,14 @@
             }
 
             measureToolBtn.addEventListener('click', () => toggleMeasureTool());
-            
+
             function toggleWallTool(forceState = null) {
                 const wasDrawing = isDrawingWall;
                 isDrawingWall = forceState !== null ? forceState : !isDrawingWall;
-                
+
                 if (isDrawingWall) {
                     if (!wasDrawing) {
-                        toggleMeasureTool(false); 
+                        toggleMeasureTool(false);
                         deselectAll();
                         recordState(); // Record state before starting to draw a new wall
                     }
@@ -2181,15 +2244,15 @@
                     canvas.style.cursor = 'default';
                 }
             }
-            
+
             function findSnapPoint(clickPos) {
                 const walls = aree[currentAreaIndex]?.walls || [];
                 for (const wall of walls) {
                     if (!wall.points || wall.points.length === 0) continue;
-                    
-                    const firstPoint = wall.points;
+
+                    const firstPoint = wall.points[0]; // Corretto
                     const lastPoint = wall.points[wall.points.length - 1];
-                    
+
                     const distToFirst = Math.hypot(clickPos.x - firstPoint.x, clickPos.y - firstPoint.y);
                     if (distToFirst < wallSnapTolerance / zoom) return firstPoint;
 
@@ -2229,13 +2292,13 @@
 
             function handleWallClick(e) {
                 e.stopPropagation();
-                
+
                 const canvasRect = canvas.getBoundingClientRect();
                 let clickPos = {
                     x: (e.clientX - canvasRect.left) / zoom,
                     y: (e.clientY - canvasRect.top) / zoom
                 };
-                 
+
                 if (currentWallPoints.length > 0) {
                     const lastPoint = currentWallPoints[currentWallPoints.length - 1];
                     clickPos = getCorrectedPoint(clickPos, lastPoint, wallDrawingModeSelect.value);
@@ -2258,7 +2321,7 @@
                 } else {
                     currentWallPoints.push(finalPos);
                 }
-                
+
                 recordState();
                 drawWalls();
             }
@@ -2277,14 +2340,14 @@
 
             function finishCurrentWall(record = true) {
                 if (!currentWallId) return;
-                
+
                 const wallIndex = aree[currentAreaIndex].walls.findIndex(w => w.id === currentWallId);
                 if (wallIndex > -1 && aree[currentAreaIndex].walls[wallIndex].points.length < 2) {
                     aree[currentAreaIndex].walls.splice(wallIndex, 1);
                     record = false; // Non registrare se il muro non è valido
                     undo(); // Annulla lo stato iniziale della creazione del muro
                 }
-                
+
                 if (record) recordState();
 
                 currentWallId = null;
@@ -2293,14 +2356,14 @@
                 toggleWallTool(false);
                 drawWalls();
             }
-            
+
             function drawWalls(previewPoint = null) {
                 wallCanvas.innerHTML = '';
                 wallLabelsContainer.innerHTML = '';
 
                 const area = aree[currentAreaIndex];
                 if (!area || !area.walls) return;
-                
+
                 const walls = area.walls;
                 const pixelsPerMeter = area.pixelsPerMeter || 100;
                 const svgNS = 'http://www.w3.org/2000/svg';
@@ -2308,7 +2371,7 @@
                 const createLabel = (p1, p2) => {
                     const lengthPx = Math.hypot(p2.x - p1.x, p2.y - p1.y);
                     if (lengthPx < pixelsPerMeter * 0.2) return;
-                    
+
                     const lengthM = (lengthPx / pixelsPerMeter).toFixed(2);
                     const label = document.createElement('div');
                     label.className = 'wall-label';
@@ -2320,7 +2383,7 @@
 
                 walls.forEach(wall => {
                     if (!wall.points || wall.points.length < 2) return;
-                    
+
                     const isSelected = wall.id === selectedWallId;
                     const strokeWidthPx = (wall.thickness / 100) * pixelsPerMeter;
 
@@ -2329,12 +2392,12 @@
                     polyline.setAttribute('points', pointsStr);
                     polyline.setAttribute('stroke-width', isSelected ? strokeWidthPx + 2 : strokeWidthPx);
                     polyline.classList.add('wall-segment');
-                    if(isSelected) polyline.classList.add('selected');
+                    if (isSelected) polyline.classList.add('selected');
 
                     wallCanvas.appendChild(polyline);
-                    
+
                     for (let i = 0; i < wall.points.length - 1; i++) {
-                        createLabel(wall.points[i], wall.points[i+1]);
+                        createLabel(wall.points[i], wall.points[i + 1]);
                     }
                 });
 
@@ -2355,12 +2418,11 @@
                     createLabel(lastPoint, previewPoint);
                 }
             }
-            
-            // Funzione per trovare il muro più vicino al punto di clic
+
             function getClosestWallId(clickPos) {
                 const area = aree[currentAreaIndex];
                 if (!area || !area.walls) return null;
-                
+
                 const clickTolerance = 10 / zoom; // Tolleranza in pixel
                 let closestWall = null;
                 let minDistance = Infinity;
@@ -2369,7 +2431,7 @@
                     if (!wall.points || wall.points.length < 2) continue;
                     for (let i = 0; i < wall.points.length - 1; i++) {
                         const p1 = wall.points[i];
-                        const p2 = wall.points[i+1];
+                        const p2 = wall.points[i + 1];
                         const distance = pointToLineSegmentDistance(clickPos, p1, p2);
                         if (distance < minDistance) {
                             minDistance = distance;
@@ -2381,7 +2443,6 @@
                 return (minDistance < clickTolerance) ? closestWall : null;
             }
 
-            // Funzione helper per calcolare la distanza tra un punto e un segmento di linea
             function pointToLineSegmentDistance(p, v, w) {
                 const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2;
                 if (l2 === 0) return Math.hypot(p.x - v.x, p.y - v.y);
@@ -2395,9 +2456,7 @@
             }
 
             wallToolBtn.addEventListener('click', () => toggleWallTool());
-            
-            let customGroups = [];
-            
+
             function findElementDataByType(type) {
                 if (type === 'zone') return null;
                 for (const group of customGroups) {
@@ -2421,14 +2480,78 @@
                         elements: [
                             { type: "lampione", name: "Lampione", icon: "💡", width: 30, height: 30, bgColor: '#fffde7', cost: 0, isLightSource: true, isCustom: false, lumens: 800 },
                             { type: "faretti", name: "Faretti", icon: "🔦", width: 100, height: 20, bgColor: '#f1f8e9', cost: 0, isLightSource: true, isCustom: false, lumens: 400 },
+                            { type: "luci_stringa", name: "Luci a Stringa", icon: "✨", width: 500, height: 30, bgColor: '#fff59d', cost: 0, isLightSource: true, isCustom: false, lumens: 1000 },
                         ]
                     },
-                     {
+                    {
                         name: "Persona", isCustom: false,
                         elements: [
                             { type: "persona", name: "Persona", icon: "🧍", width: 55, height: 175, bgColor: '#e0e0e0', cost: 0, isLightSource: false, isCustom: false },
                         ]
                     },
+                    {
+                        name: "Mobili Soggiorno", isCustom: false,
+                        elements: [
+                            { type: "divano", name: "Divano", icon: "🛋️", width: 200, height: 90, bgColor: '#a1887f', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "tavolino", name: "Tavolino", icon: "☕", width: 80, height: 40, bgColor: '#d7ccc8', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "libreria", name: "Libreria", icon: "📚", width: 120, height: 30, bgColor: '#efebe9', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "tv", name: "Mobile TV", icon: "📺", width: 150, height: 40, bgColor: '#616161', cost: 0, isLightSource: false, isCustom: false }
+                        ]
+                    },
+                    {
+                        name: "Arredi Cucina", isCustom: false,
+                        elements: [
+                            { type: "tavolo_pranzo", name: "Tavolo da Pranzo", icon: "🍽️", width: 160, height: 90, bgColor: '#bcaaa4', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "sedia", name: "Sedia", icon: "🪑", width: 45, height: 45, bgColor: '#d7ccc8', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "cucina", name: "Blocco Cucina", icon: "🍳", width: 300, height: 60, bgColor: '#cfd8dc', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "frigorifero", name: "Frigorifero", icon: "🧊", width: 60, height: 60, bgColor: '#eceff1', cost: 0, isLightSource: false, isCustom: false }
+                        ]
+                    },
+                    {
+                        name: "Arredi Camera da Letto", isCustom: false,
+                        elements: [
+                            { type: "letto", name: "Letto Matrimoniale", icon: "🛏️", width: 160, height: 200, bgColor: '#b0bec5', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "comodino", name: "Comodino", icon: "💡", width: 50, height: 40, bgColor: '#cfd8dc', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "armadio", name: "Armadio", icon: "🚪", width: 180, height: 60, bgColor: '#efebe9', cost: 0, isLightSource: false, isCustom: false }
+                        ]
+                    },
+                    {
+                        name: "Arredi Esterni", isCustom: false,
+                        elements: [
+                            { type: "ombrellone", name: "Ombrellone", icon: "⛱️", width: 250, height: 250, bgColor: '#ffcc80', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "tavolo_esterno", name: "Tavolo da Esterno", icon: "🌳", width: 120, height: 120, bgColor: '#a1887f', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "barbecue", name: "Barbecue", icon: "🔥", width: 80, height: 60, bgColor: '#757575', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "dondolo", name: "Dondolo", icon: "🧘", width: 180, height: 80, bgColor: '#e6ee9c', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "pergola", name: "Pergola", icon: "🏛️", width: 300, height: 300, bgColor: '#efebe9', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "focolare", name: "Focolare", icon: "🔥", width: 100, height: 100, bgColor: '#bcaaa4', cost: 0, isLightSource: true, isCustom: false, lumens: 500 },
+                            { type: "panchina", name: "Panchina", icon: "🪵", width: 150, height: 60, bgColor: '#bcaaa4', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "cucina_esterna", name: "Cucina da Esterno", icon: "🍴", width: 250, height: 70, bgColor: '#9e9e9e', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "vasca_idromassaggio", name: "Vasca Idromassaggio", icon: "♨️", width: 220, height: 220, bgColor: '#80deea', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "amaca", name: "Amaca", icon: "🏕️", width: 220, height: 100, bgColor: '#f0f4c3', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "fontana", name: "Fontana", icon: "⛲", width: 120, height: 120, bgColor: '#b0bec5', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "tappeto_esterno", name: "Tappeto da Esterno", icon: "░", width: 300, height: 200, bgColor: '#a1887f', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "lettino", name: "Lettino", icon: "🏖️", width: 70, height: 190, bgColor: '#fffde7', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "lavandino_esterno", name: "Lavandino da Esterno", icon: "💧", width: 60, height: 50, bgColor: '#eceff1', cost: 0, isLightSource: false, isCustom: false }
+                        ]
+                    },
+                    {
+                        name: "Vegetazione", isCustom: false,
+                        elements: [
+                            { type: "pianta_vaso", name: "Pianta in Vaso", icon: "🪴", width: 50, height: 50, bgColor: '#a5d6a7', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "siepe", name: "Siepe", icon: "🌿", width: 200, height: 50, bgColor: '#66bb6a', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "albero", name: "Albero", icon: "🌳", width: 150, height: 150, bgColor: '#81c784', cost: 0, isLightSource: false, isCustom: false }
+                        ]
+                    },
+                    {
+                        name: "Impianti e Strutture", isCustom: false,
+                        elements: [
+                            { type: "pannelli_solari", name: "Pannelli Solari", icon: "☀️", width: 200, height: 100, bgColor: '#455a64', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "accumulo_fotovoltaico", name: "Accumulo Fotovoltaico", icon: "🔋", width: 80, height: 100, bgColor: '#757575', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "presa_elettrica", name: "Presa Elettrica", icon: "🔌", width: 20, height: 20, bgColor: '#fafafa', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "predisposizione_tubi", name: "Predisposizione Tubi", icon: "〰️", width: 100, height: 15, bgColor: '#cfd8dc', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "scala_dritta", name: "Scala", icon: "🪜", width: 80, height: 250, bgColor: '#bcaaa4', cost: 0, isLightSource: false, isCustom: false }
+                        ]
+                    }
                 ];
             }
 
@@ -2450,12 +2573,12 @@
                         item.innerHTML = `<div class="element-icon">${el.icon}</div><div class="element-name">${el.name}</div>`;
                         item.setAttribute('draggable', 'true');
                         if (el.isCustom) {
-                           const deleteBtn = document.createElement('button');
-                           deleteBtn.className = 'delete-btn delete-element-btn';
-                           deleteBtn.innerHTML = '🗑️';
-                           deleteBtn.title = 'Elimina elemento';
-                           deleteBtn.dataset.elementType = el.type;
-                           item.appendChild(deleteBtn);
+                            const deleteBtn = document.createElement('button');
+                            deleteBtn.className = 'delete-btn delete-element-btn';
+                            deleteBtn.innerHTML = '🗑️';
+                            deleteBtn.title = 'Elimina elemento';
+                            deleteBtn.dataset.elementType = el.type;
+                            item.appendChild(deleteBtn);
                         }
                         item.addEventListener('dragstart', handleDragStart);
                         item.addEventListener('click', handleElementClick);
@@ -2465,8 +2588,8 @@
                 });
                 updateGroupSelect();
             }
-            
-            dynamicToolbarContent.addEventListener('click', function(e){
+
+            dynamicToolbarContent.addEventListener('click', function (e) {
                 e.stopPropagation();
                 const target = e.target;
                 if (target.classList.contains('delete-element-btn')) {
@@ -2515,13 +2638,13 @@
             }
 
             function updateLightEffect(element) {
-                element.style.boxShadow = ''; 
+                element.style.boxShadow = '';
                 const isNightMode = document.body.classList.contains('night-mode');
                 const isLightSource = element.dataset.isLightSource === 'true';
                 if (isNightMode && isLightSource) {
                     const lumens = parseFloat(element.dataset.lumens) || 0;
                     if (lumens <= 0) return;
-                    const LUMEN_TO_PIXEL_RATIO = 0.15; 
+                    const LUMEN_TO_PIXEL_RATIO = 0.15;
                     const lightRadius = lumens * LUMEN_TO_PIXEL_RATIO;
                     const spreadRadius = lightRadius / 3;
                     const innerGlow = `0 0 ${lightRadius / 2}px ${spreadRadius / 2}px rgba(255, 250, 220, 0.7)`;
@@ -2529,7 +2652,7 @@
                     element.style.boxShadow = `${innerGlow}, ${outerGlow}`;
                 }
             }
-            
+
             function updateLightEffectOnAllElements() {
                 document.querySelectorAll('.placed-element').forEach(el => updateLightEffect(el));
             }
@@ -2540,10 +2663,10 @@
                 select.innerHTML = '';
                 customGroups.forEach((group, idx) => {
                     if (group.isCustom) {
-                       const opt = document.createElement('option');
-                       opt.value = idx;
-                       opt.textContent = group.name;
-                       select.appendChild(opt);
+                        const opt = document.createElement('option');
+                        opt.value = idx;
+                        opt.textContent = group.name;
+                        select.appendChild(opt);
                     }
                 });
                 select.value = currentValue || (select.options.length > 0 ? select.options.value : '');
@@ -2620,12 +2743,14 @@
 
             function loadArea(index, resetHistory = true) {
                 if (index < 0 || index >= aree.length) return;
-                
-                if(currentAreaIndex !== index && currentAreaIndex > -1) saveCurrentAreaState();
-                
+
+                if (currentAreaIndex !== index && currentAreaIndex > -1) {
+                    saveCurrentAreaState();
+                }
+
                 currentAreaIndex = index;
                 const areaData = aree[index];
-                
+
                 if (!areaData.walls) areaData.walls = [];
                 if (!areaData.elements) areaData.elements = [];
 
@@ -2636,10 +2761,12 @@
 
                 canvas.style.background = areaData.canvasBackground;
                 updateAreaDisplay();
-                
+
                 canvas.innerHTML = '';
                 deselectAll();
-                
+
+                updateCanvasSize(); // Chiamata PRIMA di creare gli elementi
+
                 areaData.elements.forEach(elData => {
                     createPlacedElement({
                         ...elData,
@@ -2647,17 +2774,16 @@
                         height: parseFloat(elData.height)
                     });
                 });
-                
+
                 updateLightEffectOnAllElements();
                 updateTotalCost();
-                updateCanvasSize(); 
                 drawWalls();
                 renderAreaList();
-                
+
                 if (resetHistory) {
                     undoStack = [];
                     redoStack = [];
-                    recordState(); 
+                    recordState();
                 }
                 updateUndoRedoButtons();
             }
@@ -2677,10 +2803,10 @@
                     const nameSpan = document.createElement('span');
                     nameSpan.textContent = area.name;
                     item.appendChild(nameSpan);
-                    
+
                     const buttonsDiv = document.createElement('div');
                     buttonsDiv.className = 'area-item-buttons';
-                    
+
                     const renameBtn = document.createElement('button');
                     renameBtn.textContent = '✏️';
                     renameBtn.title = 'Rinomina';
@@ -2706,7 +2832,7 @@
                         if (confirm(`Sei sicuro di voler eliminare l'area "${area.name}"?`)) {
                             aree.splice(index, 1);
                             const newIndex = Math.min(index, aree.length - 1);
-                            loadArea(newIndex, true); // Reset history for the new area
+                            loadArea(newIndex, true);
                         }
                     };
 
@@ -2716,7 +2842,7 @@
 
                     item.addEventListener('click', () => {
                         if (currentAreaIndex !== index) {
-                           loadArea(index);
+                            loadArea(index);
                         }
                     });
                     list.appendChild(item);
@@ -2726,15 +2852,15 @@
             function createNewArea(name, load = false) {
                 const newArea = {
                     name: name,
-                    widthMeters: 10,
-                    heightMeters: 8.5,
+                    widthMeters: 10.9,
+                    heightMeters: 7.6,
                     pixelsPerMeter: 100,
                     canvasBackground: '#a8e6cf',
                     elements: [],
                     walls: []
                 };
                 aree.push(newArea);
-                if(load) {
+                if (load) {
                     loadArea(aree.length - 1, true);
                 } else {
                     renderAreaList();
@@ -2756,9 +2882,9 @@
                 header.addEventListener('click', () => {
                     const section = header.parentElement;
                     const isActive = section.classList.contains('active');
-                    
+
                     document.querySelectorAll('.toolbar-section').forEach(s => s.classList.remove('active'));
-                    
+
                     if (!isActive) {
                         section.classList.add('active');
                     }
@@ -2779,11 +2905,11 @@
                 e.preventDefault();
                 const target = e.target.closest('.area-list-item');
                 if (!target || target.dataset.index == draggedIndex) return;
-                
+
                 document.querySelectorAll('.area-list-item').forEach(item => {
                     item.classList.remove('drag-over-top', 'drag-over-bottom');
                 });
-                
+
                 const rect = target.getBoundingClientRect();
                 const offset = e.clientY - rect.top - (rect.height / 2);
                 if (offset < 0) {
@@ -2808,17 +2934,14 @@
                 const offset = e.clientY - rect.top - (rect.height / 2);
 
                 const activeAreaName = aree[currentAreaIndex].name;
-                const draggedItem = aree.splice(draggedIndex, 1);
+                const [draggedItem] = aree.splice(draggedIndex, 1);
 
-                let newIndex;
                 if (offset < 0) {
-                    newIndex = (draggedIndex < targetIndex) ? targetIndex - 1 : targetIndex;
+                    aree.splice(targetIndex, 0, draggedItem);
                 } else {
-                    newIndex = (draggedIndex < targetIndex) ? targetIndex : targetIndex + 1;
+                    aree.splice(targetIndex + 1, 0, draggedItem);
                 }
-                
-                aree.splice(newIndex, 0, draggedItem);
-                
+
                 currentAreaIndex = aree.findIndex(a => a.name === activeAreaName);
                 renderAreaList();
                 recordState();
@@ -2831,10 +2954,41 @@
                 draggedIndex = null;
             });
 
-            initDefaultGroups();
-            renderToolbar();
-            populateIconSelector();
-            createNewArea("Area Principale", true);
+            // --- NUOVA LOGICA DI INIZIALIZZAZIONE ---
+            function loadProjectState(data) {
+                // 1. Carica le definizioni degli elementi
+                initDefaultGroups();
+                if (Array.isArray(data.customElementDefinitions)) {
+                    // Unisci senza duplicati
+                    data.customElementDefinitions.forEach(customGroup => {
+                        if (!customGroups.some(g => g.name === customGroup.name)) {
+                            customGroups.push(customGroup);
+                        }
+                    });
+                }
+                renderToolbar();
+
+                // 2. Carica le aree
+                aree = data.aree || [];
+
+                // 3. Se non ci sono aree valide, inizializza con una di default
+                if (aree.length === 0) {
+                    initializeApp();
+                } else {
+                    // 4. Altrimenti, carica la prima area del progetto
+                    loadArea(0);
+                }
+            }
+
+            function initializeApp() {
+                initDefaultGroups();
+                renderToolbar();
+                populateIconSelector();
+                createNewArea("Area Principale", true);
+            }
+
+            // Esegui l'inizializzazione di default all'avvio
+            initializeApp();
 
         });
     </script>
