@@ -1565,7 +1565,7 @@
                     element.style.backgroundImage = 'none';
 
                     const elData = findElementDataByType(element.dataset.type);
-                    const icon = elData?.icon || '❓';
+                    const icon = elData?.icon || '🟦';
                     const name = elData?.name || element.dataset.type;
                     const widthM = (element.offsetWidth / pixelsPerMeter).toFixed(2);
                     const heightM = (element.offsetHeight / pixelsPerMeter).toFixed(2);
@@ -1937,7 +1937,7 @@
 
                 } else {
                     const elData = findElementDataByType(element.dataset.type);
-                    const icon = elData?.icon || '❓';
+                    const icon = elData?.icon || '🟦';
                     const name = elData?.name || element.dataset.type;
                     const lightSourceHTML = element.dataset.isLightSource === 'true' ? `
                     <div>
@@ -2548,6 +2548,8 @@
                             { type: "pannelli_solari", name: "Pannelli Solari", icon: "☀️", width: 200, height: 100, bgColor: '#455a64', cost: 0, isLightSource: false, isCustom: false },
                             { type: "accumulo_fotovoltaico", name: "Accumulo Fotovoltaico", icon: "🔋", width: 80, height: 100, bgColor: '#757575', cost: 0, isLightSource: false, isCustom: false },
                             { type: "presa_elettrica", name: "Presa Elettrica", icon: "🔌", width: 20, height: 20, bgColor: '#fafafa', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "presa_tv", name: "Presa TV", icon: "📡", width: 20, height: 20, bgColor: '#fafafa', cost: 0, isLightSource: false, isCustom: false },
+                            { type: "presa_ethernet", name: "Presa Ethernet", icon: "🌐", width: 20, height: 20, bgColor: '#fafafa', cost: 0, isLightSource: false, isCustom: false },
                             { type: "predisposizione_tubi", name: "Predisposizione Tubi", icon: "〰️", width: 100, height: 15, bgColor: '#cfd8dc', cost: 0, isLightSource: false, isCustom: false },
                             { type: "scala_dritta", name: "Scala", icon: "🪜", width: 80, height: 250, bgColor: '#bcaaa4', cost: 0, isLightSource: false, isCustom: false }
                         ]
