@@ -367,12 +367,12 @@
 
         .canvas {
             background: linear-gradient(45deg, #a8e6cf 0%, #dcedc1 100%);
-            border-radius: 5px;
+            border-radius: 2px;
             position: absolute;
             top: 20px;
             left: 20px;
             overflow: visible;
-            box-shadow: 0 0 0 3px #333, 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 0 1px #333, 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .canvas::before {
@@ -1070,7 +1070,7 @@
             });
 
             document.getElementById('load-json-input').addEventListener('change', function (e) {
-                const file = e.target.files[0];
+                const file = e.target.files;
                 if (!file) return;
                 const reader = new FileReader();
                 reader.onload = function (evt) {
@@ -2187,7 +2187,7 @@
                 for (const wall of walls) {
                     if (!wall.points || wall.points.length === 0) continue;
                     
-                    const firstPoint = wall.points[0];
+                    const firstPoint = wall.points;
                     const lastPoint = wall.points[wall.points.length - 1];
                     
                     const distToFirst = Math.hypot(clickPos.x - firstPoint.x, clickPos.y - firstPoint.y);
@@ -2546,7 +2546,7 @@
                        select.appendChild(opt);
                     }
                 });
-                select.value = currentValue || (select.options.length > 0 ? select.options[0].value : '');
+                select.value = currentValue || (select.options.length > 0 ? select.options.value : '');
             }
 
             document.getElementById('add-group-btn').addEventListener('click', function () {
@@ -2808,7 +2808,7 @@
                 const offset = e.clientY - rect.top - (rect.height / 2);
 
                 const activeAreaName = aree[currentAreaIndex].name;
-                const draggedItem = aree.splice(draggedIndex, 1)[0];
+                const draggedItem = aree.splice(draggedIndex, 1);
 
                 let newIndex;
                 if (offset < 0) {
