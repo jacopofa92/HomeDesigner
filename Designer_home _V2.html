@@ -369,6 +369,8 @@
             padding: 20px;
         }
 
+        
+
         #design-wrapper {
             position: relative;
             margin: 20px auto;
@@ -734,10 +736,23 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
-        body.night-mode .canvas {
-            background: linear-gradient(45deg, #2c3e50 0%, #34495e 100%);
+         .canvas::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(20, 30, 50, 0); /* Blu scuro, inizialmente invisibile */
+            z-index: 1; /* Posizionato sopra lo sfondo del canvas ma sotto gli elementi */
+            pointer-events: none; /* Rende l'overlay non interagibile */
+            transition: background-color 0.3s ease;
         }
 
+        /* Questa regola attiva l'overlay solo in modalità notturna */
+        body.night-mode .canvas::after {
+            background-color: rgba(20, 30, 50, 0.85); /* Overlay blu scuro attivo */
+        }
         body.night-mode .canvas::before {
             background:
                 linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
