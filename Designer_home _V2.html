@@ -369,7 +369,7 @@
             padding: 20px;
         }
 
-        
+
 
         #design-wrapper {
             position: relative;
@@ -736,23 +736,28 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
-         .canvas::after {
+        .canvas::after {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(20, 30, 50, 0); /* Blu scuro, inizialmente invisibile */
-            z-index: 1; /* Posizionato sopra lo sfondo del canvas ma sotto gli elementi */
-            pointer-events: none; /* Rende l'overlay non interagibile */
+            background-color: rgba(20, 30, 50, 0);
+            /* Blu scuro, inizialmente invisibile */
+            z-index: 1;
+            /* Posizionato sopra lo sfondo del canvas ma sotto gli elementi */
+            pointer-events: none;
+            /* Rende l'overlay non interagibile */
             transition: background-color 0.3s ease;
         }
 
         /* Questa regola attiva l'overlay solo in modalità notturna */
         body.night-mode .canvas::after {
-            background-color: rgba(20, 30, 50, 0.85); /* Overlay blu scuro attivo */
+            background-color: rgba(20, 30, 50, 0.85);
+            /* Overlay blu scuro attivo */
         }
+
         body.night-mode .canvas::before {
             background:
                 linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
@@ -997,46 +1002,54 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
+            // ================================================================= //
+            // VARIABILI GLOBALI E STATO DELL'APPLICAZIONE                      //
+            // ================================================================= //
+
+            // --- Gestione Aree ---
             let aree = [];
             let currentAreaIndex = -1;
-            let customGroups = [];
 
-            let selectedElement = null;
-            let selectedWallId = null;
+            // --- Libreria Elementi ---
+            let customGroups = []; // Contiene gruppi e definizioni degli elementi (sia default che custom)
+
+            // --- Stato Interazione Utente ---
+            let selectedElement = null; // Elemento (oggetto, zona) attualmente selezionato
+            let selectedWallId = null; // ID del muro attualmente selezionato
             let dragOffset = { x: 0, y: 0 };
             let isDragging = false;
             let isResizing = false;
             let resizeStart = { x: 0, y: 0, width: 0, height: 0, left: 0, top: 0 };
             let resizeDirection = '';
-            let elementCounter = 0;
-            let wallCounter = 0;
+            let elementCounter = 0; // Contatore per ID univoci
+            let wallCounter = 0; // Contatore per ID univoci dei muri
 
+            // --- Stato Strumenti ---
             let isDrawingZone = false;
             let zoneDrawStart = { x: 0, y: 0 };
             let currentDrawingZone = null;
 
-            let undoStack = [];
-            let redoStack = [];
-            let isRestoringState = false;
-            const undoBtn = document.getElementById('undo-btn');
-            const redoBtn = document.getElementById('redo-btn');
-
             let isMeasuring = false;
-            let measureState = 0;
+            let measureState = 0; // 0: idle, 1: primo punto piazzato, 2: misurazione completata
             let measurePointA = null;
-            const measureToolBtn = document.getElementById('measure-tool-btn');
-            const measureVisualsElement = document.getElementById('measure-visuals');
 
             let isDrawingWall = false;
             let currentWallPoints = [];
             let currentWallId = null;
-            const wallToolBtn = document.getElementById('wall-tool-btn');
-            const wallCanvas = document.getElementById('wall-canvas');
-            const wallLabelsContainer = document.getElementById('wall-labels-container');
-            const wallThicknessInput = document.getElementById('wall-thickness-input');
-            const wallDrawingModeSelect = document.getElementById('wall-drawing-mode');
-            const wallSnapTolerance = 5;
+            const wallSnapTolerance = 5; // Pixel di tolleranza per l'aggancio ai muri
 
+            // --- Stato Undo/Redo ---
+            let undoStack = [];
+            let redoStack = [];
+            let isRestoringState = false; // Flag per evitare di registrare stati durante un undo/redo
+
+            // --- Stato Pan/Zoom Canvas ---
+            let zoom = 1;
+            let isPanning = false;
+            let panStart = { x: 0, y: 0 };
+            let panOffset = { x: 0, y: 0 };
+
+            // --- Costanti ---
             const emojiList = [
                 '❓', '❗', '❤️', '⭐', '✔️', '❌', '➡️', '⬅️', '⬆️', '⬇️', '🔄', '➕', '➖', '⭕', '🔴', '🟠',
                 '🟡', '🟢', '🔵', '🟣', '🟤', '⚫', '⚪', '🟥', '🟧', '🟨', '🟩', '🟦', '🟪', '🟫', '🔶', '🔷',
@@ -1050,239 +1063,80 @@
                 '🚗', '🚲', '🛵', '🛹', '🛴', '⛽', '🍕', '🍔', '🍟', '🌭', '🍿', '🧂', '🌶️', '🍞', '🧀', '🥩', '🍗', '🍉', '🍇', '🍋', '🍎', '🍓', '🥕'
             ];
 
+            // --- Riferimenti a Elementi DOM ---
             const canvas = document.getElementById('canvas');
             const designWrapper = document.getElementById('design-wrapper');
             const canvasContainer = document.getElementById('canvas-container');
             const inspector = document.getElementById('element-inspector');
             const dynamicToolbarContent = document.getElementById('dynamic-toolbar-content');
+            const undoBtn = document.getElementById('undo-btn');
+            const redoBtn = document.getElementById('redo-btn');
+            const measureToolBtn = document.getElementById('measure-tool-btn');
+            const measureVisualsElement = document.getElementById('measure-visuals');
+            const wallToolBtn = document.getElementById('wall-tool-btn');
+            const wallCanvas = document.getElementById('wall-canvas');
+            const wallLabelsContainer = document.getElementById('wall-labels-container');
+            const wallThicknessInput = document.getElementById('wall-thickness-input');
+            const wallDrawingModeSelect = document.getElementById('wall-drawing-mode');
 
 
-            document.getElementById('clear-all-btn').addEventListener('click', () => clearAll(true));
-            document.getElementById('delete-selected-btn').addEventListener('click', deleteSelected);
-            document.getElementById('duplicate-selected-btn').addEventListener('click', duplicateSelected);
-            document.getElementById('bring-to-front-btn').addEventListener('click', bringToFront);
-            document.getElementById('send-to-back-btn').addEventListener('click', sendToBack);
+            // ================================================================= //
+            // GESTIONE DELLO STATO (UNDO/REDO)                                  //
+            // ================================================================= //
 
-            document.getElementById('toggle-3d-btn').addEventListener('click', function () {
-                canvasContainer.classList.toggle('view-3d');
-                applyPanAndZoom();
-            });
-
-            document.getElementById('night-mode-btn').addEventListener('click', function () {
-                document.body.classList.toggle('night-mode');
-                updateLightEffectOnAllElements();
-            });
-
-            canvas.addEventListener('dragover', handleDragOver);
-            canvas.addEventListener('drop', handleDrop);
-            canvas.addEventListener('click', handleCanvasClick);
-            canvas.addEventListener('dblclick', handleCanvasDblClick);
-
-
-            document.getElementById('width-input').addEventListener('input', function () {
-                if (currentAreaIndex > -1) aree[currentAreaIndex].widthMeters = parseFloat(this.value);
-                updateAreaDisplay();
-                updateCanvasSize();
-            });
-            document.getElementById('height-input').addEventListener('input', function () {
-                if (currentAreaIndex > -1) aree[currentAreaIndex].heightMeters = parseFloat(this.value);
-                updateAreaDisplay();
-                updateCanvasSize();
-            });
-            document.getElementById('pixels-meter-input').addEventListener('input', function (e) {
-                if (currentAreaIndex > -1) aree[currentAreaIndex].pixelsPerMeter = parseInt(e.target.value);
-                updateCanvasSize();
-                drawWalls();
-                document.querySelectorAll('.placed-element').forEach(el => {
-                    updateElementContent(el);
-                });
-            });
-
-            document.getElementById('canvas-bg-select').addEventListener('change', function (e) {
-                recordState();
-                if (currentAreaIndex > -1) aree[currentAreaIndex].canvasBackground = e.target.value;
-                canvas.style.background = e.target.value;
-            });
-
-            addUndoRedoToInput(document.getElementById('width-input'));
-            addUndoRedoToInput(document.getElementById('height-input'));
-            addUndoRedoToInput(document.getElementById('pixels-meter-input'));
-            addUndoRedoToInput(wallThicknessInput);
-
-            document.getElementById('save-image-btn').addEventListener('click', function () {
-                deselectAll();
-                toggleMeasureTool(false);
-                toggleWallTool(false);
-
-                setTimeout(() => {
-                    html2canvas(designWrapper, {
-                        backgroundColor: canvas.style.background || null,
-                        scale: 2,
-                        ignoreElements: (element) => element.id === 'measure-visuals' || element.classList.contains('resize-handle')
-                    }).then(function (canvasImg) {
-                        const link = document.createElement('a');
-                        link.download = `${aree[currentAreaIndex].name.replace(/\s+/g, '_') || 'design'}.png`;
-                        link.href = canvasImg.toDataURL('image/png');
-                        link.click();
-                    });
-                }, 100);
-            });
-
-            document.getElementById('highlight-grid-btn').addEventListener('click', function () {
-                canvas.classList.toggle('grid-strong');
-            });
-
-            document.getElementById('save-json-btn').addEventListener('click', function () {
-                saveCurrentAreaState();
-
-                const dataToSave = {
-                    aree: aree,
-                    customElementDefinitions: customGroups.filter(g => g.isCustom).map(group => {
-                        return {
-                            name: group.name,
-                            isCustom: true,
-                            elements: group.elements.filter(el => el.isCustom)
-                        };
-                    })
-                };
-
-                const blob = new Blob([JSON.stringify(dataToSave, null, 2)], { type: "application/json" });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = "progetto_aree.json";
-                link.click();
-            });
-
-            document.getElementById('load-json-btn').addEventListener('click', function () {
-                document.getElementById('load-json-input').click();
-            });
-
-            document.getElementById('load-json-input').addEventListener('change', function (e) {
-                const file = e.target.files[0]; // Get the first file
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = function (evt) {
-                    try {
-                        const data = JSON.parse(evt.target.result);
-                        if (!confirm('Caricare un nuovo progetto cancellerà il lavoro corrente. Continuare?')) {
-                            e.target.value = null;
-                            return;
-                        }
-
-                        // CORREZIONE: Funzione dedicata per caricare lo stato completo
-                        loadProjectState(data);
-
-                    } catch (error) {
-                        alert('Errore: il file selezionato non è un progetto valido.');
-                        console.error("Errore nel parsing del JSON:", error);
-                    } finally {
-                        e.target.value = null; // Resetta l'input per permettere di ricaricare lo stesso file
-                    }
-                };
-                reader.readAsText(file);
-            });
-
-            let zoom = 1;
-            const zoomInput = document.getElementById('zoom-value');
-            const zoomInBtn = document.getElementById('zoom-in');
-            const zoomOutBtn = document.getElementById('zoom-out');
-
-            function applyZoom() { applyPanAndZoom(); }
-
-            zoomInput.addEventListener('input', function () {
-                zoom = Math.max(0.2, Math.min(3, parseFloat(zoomInput.value) || 1));
-                zoomInput.value = zoom;
-                applyZoom();
-            });
-            zoomInBtn.addEventListener('click', function () {
-                zoom = Math.min(3, zoom + 0.25);
-                zoom = Math.round(zoom * 100) / 100;
-                zoomInput.value = zoom;
-                applyZoom();
-            });
-            zoomOutBtn.addEventListener('click', function () {
-                zoom = Math.max(0.2, zoom - 0.25);
-                zoom = Math.round(zoom * 100) / 100;
-                zoomInput.value = zoom;
-                applyZoom();
-            });
-
-            let isPanning = false;
-            let panStart = { x: 0, y: 0 };
-            let panOffset = { x: 0, y: 0 };
-
-            function applyPanAndZoom() {
-                let transformString = `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoom})`;
-                if (canvasContainer.classList.contains('view-3d')) {
-                    const viewAdjustments = `translateY(20%) scale(0.85)`;
-                    transformString = `rotateX(45deg) rotateZ(-10deg) ${viewAdjustments} ${transformString}`;
-                }
-                designWrapper.style.transform = transformString;
-                designWrapper.style.transformOrigin = "top left";
-            }
-
-            canvasContainer.addEventListener('mousedown', function (e) {
-                if (e.target === canvasContainer) {
-                    isPanning = true;
-                    panStart.x = e.clientX - panOffset.x;
-                    panStart.y = e.clientY - panOffset.y;
-                    canvasContainer.style.cursor = "grabbing";
-                }
-            });
-
-            document.addEventListener('mousemove', function (e) {
-                if (isPanning) {
-                    panOffset.x = e.clientX - panStart.x;
-                    panOffset.y = e.clientY - panStart.y;
-                    applyPanAndZoom();
-                }
-            });
-
-            document.addEventListener('mouseup', function () {
-                if (isPanning) {
-                    isPanning = false;
-                    canvasContainer.style.cursor = "default";
-                }
-            });
-
+            /**
+             * Registra lo stato corrente dell'area di lavoro nello stack di undo.
+             * Viene chiamato prima di ogni modifica significativa (aggiunta, spostamento, cancellazione, etc.).
+             */
             function recordState() {
-                if (isRestoringState) return;
+                if (isRestoringState) return; // Evita di registrare stati durante un ripristino
 
                 const currentState = captureState();
 
+                // Evita di salvare stati identici consecutivamente
                 if (undoStack.length > 0) {
                     const lastState = undoStack[undoStack.length - 1];
                     if (JSON.stringify(lastState) === JSON.stringify(currentState)) {
-                        return; // Non salvare stati identici consecutivi
+                        return;
                     }
                 }
 
                 undoStack.push(currentState);
-                redoStack = [];
+                redoStack = []; // Ogni nuova azione pulisce lo stack di redo
                 updateUndoRedoButtons();
             }
 
+            /**
+             * Cattura una "fotografia" completa dello stato dell'area di lavoro corrente.
+             * @returns {object} Uno stato serializzabile (JSON) dell'area.
+             */
             function captureState() {
-                saveCurrentAreaState();
+                saveCurrentAreaState(); // Assicura che i dati in memoria (array 'aree') siano aggiornati
+                // Clona profondamente l'oggetto per evitare riferimenti
                 return JSON.parse(JSON.stringify({
                     ...aree[currentAreaIndex],
                     selectedWallId: selectedWallId
                 }));
             }
 
+            /**
+             * Ripristina l'area di lavoro a uno stato precedentemente salvato.
+             * @param {object} stateToRestore - Lo stato da ripristinare.
+             */
             function restoreState(stateToRestore) {
                 isRestoringState = true;
 
                 const wallIdBeingEdited = currentWallId;
 
                 const areaState = { ...stateToRestore };
-                delete areaState.selectedWallId;
+                delete areaState.selectedWallId; // Rimuove le info non pertinenti allo stato dell'area
                 aree[currentAreaIndex] = JSON.parse(JSON.stringify(areaState));
 
-                loadArea(currentAreaIndex, false);
+                loadArea(currentAreaIndex, false); // Ricarica l'area senza resettare la history
 
                 selectedWallId = stateToRestore.selectedWallId || null;
 
+                // Gestisce il caso speciale in cui si annulla mentre si disegna un muro
                 if (wallIdBeingEdited && !isDrawingWall) {
                     const restoredWall = aree[currentAreaIndex].walls.find(w => w.id === wallIdBeingEdited);
 
@@ -1300,49 +1154,80 @@
                 isRestoringState = false;
             }
 
+            /**
+             * Esegue l'azione di "Annulla".
+             */
             function undo() {
-                if (undoStack.length <= 1) return;
+                if (undoStack.length <= 1) return; // Non si può annullare lo stato iniziale
 
-                redoStack.push(undoStack.pop());
-
+                redoStack.push(undoStack.pop()); // Sposta lo stato corrente in redo
                 const stateToRestore = undoStack[undoStack.length - 1];
                 restoreState(stateToRestore);
 
                 updateUndoRedoButtons();
             }
 
+            /**
+             * Esegue l'azione di "Ripristina".
+             */
             function redo() {
                 if (redoStack.length === 0) return;
 
                 const stateToRestore = redoStack.pop();
-                undoStack.push(stateToRestore);
+                undoStack.push(stateToRestore); // Rimuove lo stato da redo e lo rimette in undo
                 restoreState(stateToRestore);
 
                 updateUndoRedoButtons();
             }
 
+            /**
+             * Aggiorna lo stato (abilitato/disabilitato) dei bottoni Undo e Redo.
+             */
             function updateUndoRedoButtons() {
                 undoBtn.disabled = undoStack.length <= 1; // Disabilitato se c'è solo lo stato iniziale
                 redoBtn.disabled = redoStack.length === 0;
             }
 
+            /**
+             * Helper per registrare lo stato quando un campo input cambia valore.
+             * @param {HTMLElement} inputElement - L'elemento input da monitorare.
+             */
             function addUndoRedoToInput(inputElement) {
                 if (!inputElement) return;
                 let valueOnFocus = '';
                 inputElement.addEventListener('focus', (e) => {
                     valueOnFocus = e.target.value;
-                    recordState();
+                    recordState(); // Registra lo stato prima della modifica
                 });
                 inputElement.addEventListener('change', (e) => {
                     if (e.target.value !== valueOnFocus) {
-                        recordState();
+                        recordState(); // Registra lo stato dopo la modifica
                     }
                 });
             }
 
-            undoBtn.addEventListener('click', undo);
-            redoBtn.addEventListener('click', redo);
 
+            // ================================================================= //
+            // GESTIONE CANVAS E UI (DIMENSIONI, ZOOM, PAN, RIGHELLI)            //
+            // ================================================================= //
+
+            /**
+             * Applica le trasformazioni di pan e zoom al wrapper del canvas.
+             * Gestisce anche la trasformazione per la vista 3D.
+             */
+            function applyPanAndZoom() {
+                let transformString = `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoom})`;
+                if (canvasContainer.classList.contains('view-3d')) {
+                    const viewAdjustments = `translateY(20%) scale(0.85)`;
+                    transformString = `rotateX(45deg) rotateZ(-10deg) ${viewAdjustments} ${transformString}`;
+                }
+                designWrapper.style.transform = transformString;
+                designWrapper.style.transformOrigin = "top left";
+            }
+
+            /**
+             * Popola il selettore di icone nel pannello "Crea Elementi".
+             */
             function populateIconSelector() {
                 const select = document.getElementById('new-element-icon-select');
                 select.innerHTML = '';
@@ -1354,6 +1239,9 @@
                 });
             }
 
+            /**
+             * Aggiorna il display dell'area totale in m².
+             */
             function updateAreaDisplay() {
                 const width = parseFloat(document.getElementById('width-input').value) || 0;
                 const height = parseFloat(document.getElementById('height-input').value) || 0;
@@ -1361,6 +1249,11 @@
                 document.getElementById('area-display').textContent = area + ' m²';
             }
 
+            /**
+             * Aggiorna i righelli superiore e sinistro in base alle dimensioni del canvas.
+             * @param {number} pixelWidth - Larghezza in pixel del canvas.
+             * @param {number} pixelHeight - Altezza in pixel del canvas.
+             */
             function updateRulers(pixelWidth, pixelHeight) {
                 const rulerTop = document.getElementById('ruler-top');
                 const rulerLeft = document.getElementById('ruler-left');
@@ -1406,6 +1299,10 @@
                 }
             }
 
+            /**
+             * Aggiorna le dimensioni del canvas in pixel basandosi sui metri e sulla scala.
+             * Adatta anche i righelli e gli elementi visivi di disegno.
+             */
             function updateCanvasSize() {
                 if (currentAreaIndex < 0) return;
                 const areaData = aree[currentAreaIndex];
@@ -1432,6 +1329,7 @@
 
                 updateRulers(pixelWidth, pixelHeight);
 
+                // Controlla che gli elementi non finiscano fuori dal canvas ridimensionato
                 document.querySelectorAll('.placed-element').forEach(element => {
                     const x = Math.max(0, Math.min(parseInt(element.style.left), canvas.clientWidth - element.offsetWidth));
                     const y = Math.max(0, Math.min(parseInt(element.style.top), canvas.clientHeight - element.offsetHeight));
@@ -1440,6 +1338,15 @@
                 });
             }
 
+
+            // ================================================================= //
+            // GESTIONE ELEMENTI (DRAG & DROP, CREAZIONE)                      //
+            // ================================================================= //
+
+            /**
+             * Gestisce l'inizio del trascinamento di un elemento dalla toolbar.
+             * @param {DragEvent} e - L'evento dragstart.
+             */
             function handleDragStart(e) {
                 const elementData = findElementDataByType(e.currentTarget.dataset.type);
                 e.dataTransfer.setData('text/plain', JSON.stringify({
@@ -1454,16 +1361,29 @@
                 }));
             }
 
+            /**
+             * Gestisce il click su un elemento nella toolbar.
+             * Il doppio click aggiunge l'elemento al canvas.
+             * @param {MouseEvent} e - L'evento click.
+             */
             function handleElementClick(e) {
                 if (e.target.classList.contains('delete-element-btn')) return;
-                if (e.detail === 2) {
+                if (e.detail === 2) { // Doppio click
                     addElementToCanvas(e.currentTarget);
                     recordState();
                 }
             }
 
+            /**
+             * Permette il drop sul canvas.
+             * @param {DragEvent} e - L'evento dragover.
+             */
             function handleDragOver(e) { e.preventDefault(); }
 
+            /**
+             * Gestisce il drop di un elemento sul canvas.
+             * @param {DragEvent} e - L'evento drop.
+             */
             function handleDrop(e) {
                 e.preventDefault();
                 const data = JSON.parse(e.dataTransfer.getData('text/plain'));
@@ -1474,6 +1394,10 @@
                 recordState();
             }
 
+            /**
+             * Aggiunge un elemento dalla toolbar al centro del canvas.
+             * @param {HTMLElement} toolbarElement - L'elemento della toolbar da cui creare l'oggetto.
+             */
             function addElementToCanvas(toolbarElement) {
                 const elementData = findElementDataByType(toolbarElement.dataset.type);
                 const data = {
@@ -1492,6 +1416,10 @@
                 createPlacedElement(data);
             }
 
+            /**
+             * Crea un nuovo elemento sul canvas a partire dai dati forniti.
+             * @param {object} data - Dati dell'elemento (tipo, posizione, dimensioni, etc.).
+             */
             function createPlacedElement(data) {
                 elementCounter++;
                 const element = document.createElement('div');
@@ -1540,6 +1468,10 @@
                 updateTotalCost();
             }
 
+            /**
+             * Applica lo stile visivo (colore, bordo, immagine) a un elemento.
+             * @param {HTMLElement} element - L'elemento da stilizzare.
+             */
             function applyElementVisuals(element) {
                 if (element.dataset.isZone !== 'true') {
                     const bgColor = element.dataset.bgColor;
@@ -1553,6 +1485,10 @@
                 updateElementContent(element);
             }
 
+            /**
+             * Aggiorna il contenuto HTML interno di un elemento (icona, nome, dimensioni).
+             * @param {HTMLElement} element - L'elemento da aggiornare.
+             */
             function updateElementContent(element) {
                 const contentWrapper = element.querySelector('.element-content-wrapper');
                 if (!contentWrapper) return;
@@ -1592,6 +1528,15 @@
                 }
             }
 
+
+            // ================================================================= //
+            // MANIPOLAZIONE ELEMENTI (SELEZIONE, DRAG, RESIZE, ETC.)            //
+            // ================================================================= //
+
+            /**
+             * Inizia il trascinamento di un elemento sul canvas.
+             * @param {MouseEvent} e - L'evento mousedown.
+             */
             function startDragging(e) {
                 if (isDrawingZone || isMeasuring || isDrawingWall || e.target.classList.contains('resize-handle')) return;
                 e.stopPropagation();
@@ -1607,6 +1552,10 @@
                 document.addEventListener('mouseup', stopDragging);
             }
 
+            /**
+             * Gestisce il movimento del mouse durante il trascinamento di un elemento.
+             * @param {MouseEvent} e - L'evento mousemove.
+             */
             function handleMouseMove(e) {
                 if (isDragging && selectedElement) {
                     const canvasRect = canvas.getBoundingClientRect();
@@ -1622,6 +1571,9 @@
                 }
             }
 
+            /**
+             * Termina il trascinamento di un elemento.
+             */
             function stopDragging() {
                 if (isDragging) {
                     isDragging = false;
@@ -1631,6 +1583,10 @@
                 }
             }
 
+            /**
+             * Inizia il ridimensionamento di un elemento.
+             * @param {MouseEvent} e - L'evento mousedown sulla maniglia di resize.
+             */
             function startResizing(e) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -1651,6 +1607,10 @@
                 document.addEventListener('mouseup', stopResizing);
             }
 
+            /**
+             * Gestisce il movimento del mouse durante il ridimensionamento.
+             * @param {MouseEvent} e - L'evento mousemove.
+             */
             function handleResize(e) {
                 if (!isResizing || !selectedElement) return;
                 const canvasRect = canvas.getBoundingClientRect();
@@ -1688,6 +1648,9 @@
                 updateInspector(selectedElement);
             }
 
+            /**
+             * Termina il ridimensionamento.
+             */
             function stopResizing() {
                 if (isResizing) {
                     isResizing = false;
@@ -1697,6 +1660,10 @@
                 }
             }
 
+            /**
+             * Seleziona un elemento, deselezionando qualsiasi altra cosa.
+             * @param {HTMLElement} target - L'elemento da selezionare.
+             */
             function selectElement(target) {
                 if (!target || isDrawingZone || isMeasuring || isDrawingWall) return;
                 if (selectedElement === target) return;
@@ -1709,6 +1676,10 @@
                 updateInspector(target);
             }
 
+            /**
+             * Seleziona un muro, deselezionando il resto.
+             * @param {string} wallId - L'ID del muro da selezionare.
+             */
             function selectWall(wallId) {
                 if (selectedWallId === wallId) return;
                 deselectAll(); // Deseleziona tutto, inclusi gli elementi
@@ -1717,6 +1688,10 @@
                 recordState();
             }
 
+            /**
+             * Aggiunge le maniglie per il ridimensionamento a un elemento.
+             * @param {HTMLElement} element - L'elemento a cui aggiungere le maniglie.
+             */
             function addResizeHandles(element) {
                 ['nw', 'ne', 'sw', 'se', 'n', 's', 'w', 'e'].forEach(dir => {
                     const handle = document.createElement('div');
@@ -1727,12 +1702,19 @@
                 });
             }
 
+            /**
+             * Rimuove le maniglie di ridimensionamento da un elemento.
+             * @param {HTMLElement} element - L'elemento da cui rimuovere le maniglie.
+             */
             function removeResizeHandles(element) {
                 if (element) {
                     element.querySelectorAll('.resize-handle').forEach(h => h.remove());
                 }
             }
 
+            /**
+             * Deseleziona qualsiasi elemento o muro attualmente selezionato.
+             */
             function deselectAll() {
                 if (selectedElement) {
                     selectedElement.classList.remove('selected');
@@ -1748,6 +1730,10 @@
                 }
             }
 
+            /**
+             * Gestisce il click sul canvas: seleziona un elemento/muro o deseleziona tutto.
+             * @param {MouseEvent} e - L'evento click.
+             */
             function handleCanvasClick(e) {
                 // Se uno strumento è attivo, la gestione del clic è specifica dello strumento
                 if (isMeasuring) { handleMeasureClick(e); return; }
@@ -1774,12 +1760,19 @@
                 }
             }
 
+            /**
+             * Gestisce il doppio click sul canvas (es. per terminare il disegno di un muro).
+             * @param {MouseEvent} e - L'evento dblclick.
+             */
             function handleCanvasDblClick(e) {
                 if (isDrawingWall) {
                     finishCurrentWall();
                 }
             }
 
+            /**
+             * Elimina l'elemento o il muro selezionato.
+             */
             function deleteSelected() {
                 if (!selectedElement && !selectedWallId) return;
                 recordState();
@@ -1801,6 +1794,9 @@
                 }
             }
 
+            /**
+             * Duplica l'elemento selezionato.
+             */
             function duplicateSelected() {
                 if (!selectedElement) return;
                 recordState();
@@ -1825,6 +1821,9 @@
                 recordState();
             }
 
+            /**
+             * Porta l'elemento selezionato in primo piano (aumenta z-index).
+             */
             function bringToFront() {
                 if (selectedElement) {
                     recordState();
@@ -1835,6 +1834,9 @@
                 }
             }
 
+            /**
+             * Porta l'elemento selezionato in secondo piano (diminuisce z-index).
+             */
             function sendToBack() {
                 if (selectedElement) {
                     recordState();
@@ -1845,6 +1847,10 @@
                 }
             }
 
+            /**
+             * Cancella tutti gli elementi e muri dall'area di lavoro corrente.
+             * @param {boolean} confirmFirst - Se true, chiede conferma all'utente.
+             */
             function clearAll(confirmFirst = true) {
                 if (confirmFirst && !confirm('Sei sicuro di voler cancellare tutti gli elementi E i muri in quest\'area? L\'azione non è reversibile.')) {
                     return;
@@ -1861,41 +1867,22 @@
                 recordState();
             }
 
-            document.addEventListener('keydown', function (e) {
-                if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') return;
+            // ================================================================= //
+            // INSPECTOR (PANNELLO PROPRIETÀ)                                    //
+            // ================================================================= //
 
-                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
-                    e.preventDefault();
-                    if (undoBtn.disabled) return;
-                    undo();
-                } else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
-                    e.preventDefault();
-                    if (redoBtn.disabled) return;
-                    redo();
-                }
-
-                else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); deleteSelected(); }
-                else if (e.key === 'd' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); duplicateSelected(); }
-                else if (e.key === 'PageUp' && selectedElement) { e.preventDefault(); bringToFront(); }
-                else if (e.key === 'PageDown' && selectedElement) { e.preventDefault(); sendToBack(); }
-                else if (e.key === 'Escape') {
-                    e.preventDefault();
-                    if (isDrawingWall) {
-                        finishCurrentWall(false);
-                        undo(); // Rimuove lo stato iniziale del disegno del muro
-                    } else if (isMeasuring) {
-                        toggleMeasureTool(false);
-                    } else {
-                        deselectAll();
-                    }
-                }
-            });
-
+            /**
+             * Pulisce e nasconde l'inspector.
+             */
             function clearInspector() {
                 inspector.style.display = 'none';
                 inspector.innerHTML = '';
             }
 
+            /**
+             * Aggiorna il pannello "Inspector" con le proprietà dell'elemento selezionato.
+             * @param {HTMLElement} element - L'elemento selezionato.
+             */
             function updateInspector(element) {
                 if (!element) {
                     clearInspector();
@@ -2043,125 +2030,23 @@
                 }
             }
 
-            document.getElementById('add-zone-btn').addEventListener('click', function () {
-                toggleWallTool(false);
-                toggleMeasureTool(false);
-                isDrawingZone = true;
-                this.classList.add('active-tool');
-                canvas.style.cursor = 'crosshair';
-                deselectAll();
-            });
 
-            canvas.addEventListener('mousedown', function (e) {
-                if (!isDrawingZone || e.target !== canvas) return;
-                e.stopPropagation();
+            // ================================================================= //
+            // STRUMENTI DI DISEGNO (ZONE, MISURE, MURI)                         //
+            // ================================================================= //
 
-                recordState();
-                const canvasRect = canvas.getBoundingClientRect();
-                const mouseX = (e.clientX - canvasRect.left) / zoom;
-                const mouseY = (e.clientY - canvasRect.top) / zoom;
-                zoneDrawStart.x = mouseX;
-                zoneDrawStart.y = mouseY;
-                elementCounter++;
-                currentDrawingZone = document.createElement('div');
-                currentDrawingZone.className = 'placed-element is-zone';
-                currentDrawingZone.style.left = zoneDrawStart.x + 'px';
-                currentDrawingZone.style.top = zoneDrawStart.y + 'px';
-                currentDrawingZone.style.width = '0px';
-                currentDrawingZone.style.height = '0px';
-                currentDrawingZone.dataset.isZone = 'true';
-                currentDrawingZone.dataset.zoneName = 'Nuova Zona';
-                currentDrawingZone.dataset.type = 'zone';
-                currentDrawingZone.dataset.id = `element_${elementCounter}`;
-                canvas.appendChild(currentDrawingZone);
-            }, true);
+            // --- Logica Strumento Misura ---
 
-            document.addEventListener('mousemove', function (e) {
-                if (isDrawingZone && currentDrawingZone) {
-                    const canvasRect = canvas.getBoundingClientRect();
-                    const mouseX = (e.clientX - canvasRect.left) / zoom;
-                    const mouseY = (e.clientY - canvasRect.top) / zoom;
-                    const newWidth = Math.abs(mouseX - zoneDrawStart.x);
-                    const newHeight = Math.abs(mouseY - zoneDrawStart.y);
-                    const newLeft = Math.min(mouseX, zoneDrawStart.x);
-                    const newTop = Math.min(mouseY, zoneDrawStart.y);
-                    currentDrawingZone.style.width = newWidth + 'px';
-                    currentDrawingZone.style.height = newHeight + 'px';
-                    currentDrawingZone.style.left = newLeft + 'px';
-                    currentDrawingZone.style.top = newTop + 'px';
-                }
-            });
-
-            document.addEventListener('mouseup', function (e) {
-                if (!isDrawingZone || !currentDrawingZone) return;
-
-                if (currentDrawingZone.offsetWidth < 10 || currentDrawingZone.offsetHeight < 10) {
-                    currentDrawingZone.remove();
-                    undo();
-                } else {
-                    const contentWrapper = document.createElement('div');
-                    contentWrapper.className = 'element-content-wrapper';
-                    currentDrawingZone.appendChild(contentWrapper);
-                    currentDrawingZone.addEventListener('mousedown', startDragging);
-                    updateElementContent(currentDrawingZone);
-                    selectElement(currentDrawingZone);
-                    recordState();
-                }
-                const btn = document.getElementById('add-zone-btn');
-                btn.classList.remove('active-tool');
-                canvas.style.cursor = 'default';
-                isDrawingZone = false;
-                currentDrawingZone = null;
-            });
-
-            canvas.addEventListener('dblclick', function (e) {
-                const targetZone = e.target.closest('.placed-element.is-zone');
-                if (!targetZone) return;
-
-                const contentWrapper = targetZone.querySelector('.element-content-wrapper');
-                if (!contentWrapper || contentWrapper.querySelector('input')) return;
-                const currentName = targetZone.dataset.zoneName;
-                recordState();
-                contentWrapper.innerHTML = `<input type="text" class="zone-name-input" value="${currentName}" />`;
-                const input = contentWrapper.querySelector('input');
-                input.focus();
-                input.select();
-                const finishEditing = () => {
-                    targetZone.dataset.zoneName = input.value.trim() || 'Zona senza nome';
-                    updateElementContent(targetZone);
-                    recordState();
-                    input.removeEventListener('blur', finishEditing);
-                    input.removeEventListener('keydown', handleKey);
-                };
-                const handleKey = (ev) => {
-                    if (ev.key === 'Enter') finishEditing();
-                    else if (ev.key === 'Escape') {
-                        input.value = currentName;
-                        finishEditing();
-                    }
-                };
-                input.addEventListener('blur', finishEditing);
-                input.addEventListener('keydown', handleKey);
-            });
-
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape' && isDrawingZone) {
-                    if (currentDrawingZone) currentDrawingZone.remove();
-                    const btn = document.getElementById('add-zone-btn');
-                    btn.classList.remove('active-tool');
-                    canvas.style.cursor = 'default';
-                    isDrawingZone = false;
-                    currentDrawingZone = null;
-                    undo();
-                }
-            });
-
+            /**
+             * Attiva/Disattiva lo strumento di misurazione.
+             * @param {boolean|null} forceState - Forza uno stato (true=on, false=off).
+             */
             function toggleMeasureTool(forceState = null) {
                 const wasMeasuring = isMeasuring;
                 isMeasuring = forceState !== null ? forceState : !isMeasuring;
 
                 if (isMeasuring) {
-                    if (!wasMeasuring) toggleWallTool(false);
+                    if (!wasMeasuring) toggleWallTool(false); // Disattiva altri strumenti
                     measureToolBtn.classList.add('active-tool');
                     canvas.style.cursor = 'crosshair';
                     deselectAll();
@@ -2175,10 +2060,17 @@
                 }
             }
 
+            /**
+             * Pulisce gli elementi visivi dello strumento misura (linea, etichetta).
+             */
             function clearMeasurementVisuals() {
                 measureVisualsElement.innerHTML = '';
             }
 
+            /**
+             * Gestisce il click del mouse quando lo strumento misura è attivo.
+             * @param {MouseEvent} e - L'evento click.
+             */
             function handleMeasureClick(e) {
                 e.stopPropagation();
                 const canvasRect = canvas.getBoundingClientRect();
@@ -2187,18 +2079,22 @@
                     y: (e.clientY - canvasRect.top) / zoom
                 };
 
-                if (measureState === 0 || measureState === 2) {
+                if (measureState === 0 || measureState === 2) { // Inizio nuova misura
                     clearMeasurementVisuals();
                     measurePointA = clickPos;
                     measureState = 1;
                     document.addEventListener('mousemove', handleMeasureMove);
-                } else if (measureState === 1) {
+                } else if (measureState === 1) { // Fine misura
                     document.removeEventListener('mousemove', handleMeasureMove);
-                    handleMeasureMove(e);
+                    handleMeasureMove(e); // Ultimo aggiornamento visivo
                     measureState = 2;
                 }
             }
 
+            /**
+             * Gestisce il movimento del mouse durante la misurazione per l'anteprima.
+             * @param {MouseEvent} e - L'evento mousemove.
+             */
             function handleMeasureMove(e) {
                 if (!measurePointA) return;
                 const canvasRect = canvas.getBoundingClientRect();
@@ -2214,6 +2110,12 @@
                 drawMeasurementLine(measurePointA, currentPos, distanceMeters);
             }
 
+            /**
+             * Disegna la linea di misurazione e la sua etichetta.
+             * @param {object} pointA - Coordinate del punto A.
+             * @param {object} pointB - Coordinate del punto B.
+             * @param {string} distance - La distanza calcolata come stringa.
+             */
             function drawMeasurementLine(pointA, pointB, distance) {
                 clearMeasurementVisuals();
                 const svgNS = 'http://www.w3.org/2000/svg';
@@ -2239,44 +2141,57 @@
                 measureVisualsElement.appendChild(label);
             }
 
-            measureToolBtn.addEventListener('click', () => toggleMeasureTool());
+            // --- Logica Strumento Muro ---
 
+            /**
+             * Attiva/Disattiva lo strumento per disegnare i muri.
+             * @param {boolean|null} forceState - Forza uno stato (true=on, false=off).
+             */
             function toggleWallTool(forceState = null) {
                 const wasDrawing = isDrawingWall;
                 isDrawingWall = forceState !== null ? forceState : !isDrawingWall;
 
                 if (isDrawingWall) {
                     if (!wasDrawing) {
-                        toggleMeasureTool(false);
+                        toggleMeasureTool(false); // Disattiva altri strumenti
                         deselectAll();
-                        recordState(); // Record state before starting to draw a new wall
+                        recordState(); // Salva stato prima di iniziare un nuovo muro
                     }
                     wallToolBtn.classList.add('active-tool');
                     canvas.style.cursor = 'crosshair';
                 } else {
-                    if (wasDrawing) finishCurrentWall(false);
+                    if (wasDrawing) finishCurrentWall(false); // Se si disattiva, finalizza il muro corrente
                     wallToolBtn.classList.remove('active-tool');
                     canvas.style.cursor = 'default';
                 }
             }
 
+            /**
+             * Trova un punto di aggancio (snap) vicino alla posizione del click.
+             * @param {object} clickPos - Le coordinate del click.
+             * @returns {object|null} Il punto a cui agganciarsi o null.
+             */
             function findSnapPoint(clickPos) {
                 const walls = aree[currentAreaIndex]?.walls || [];
                 for (const wall of walls) {
                     if (!wall.points || wall.points.length === 0) continue;
 
-                    const firstPoint = wall.points[0]; // Corretto
+                    const firstPoint = wall.points[0];
                     const lastPoint = wall.points[wall.points.length - 1];
 
-                    const distToFirst = Math.hypot(clickPos.x - firstPoint.x, clickPos.y - firstPoint.y);
-                    if (distToFirst < wallSnapTolerance / zoom) return firstPoint;
-
-                    const distToLast = Math.hypot(clickPos.x - lastPoint.x, clickPos.y - lastPoint.y);
-                    if (distToLast < wallSnapTolerance / zoom) return lastPoint;
+                    if (Math.hypot(clickPos.x - firstPoint.x, clickPos.y - firstPoint.y) < wallSnapTolerance / zoom) return firstPoint;
+                    if (Math.hypot(clickPos.x - lastPoint.x, clickPos.y - lastPoint.y) < wallSnapTolerance / zoom) return lastPoint;
                 }
                 return null;
             }
 
+            /**
+             * Corregge la posizione di un punto in base alla modalità di disegno (libero, ortogonale, diagonale).
+             * @param {object} currentPos - La posizione attuale del mouse.
+             * @param {object} lastPoint - L'ultimo punto inserito.
+             * @param {string} mode - La modalità di disegno ('free', 'orthogonal', 'diagonal').
+             * @returns {object} La posizione corretta.
+             */
             function getCorrectedPoint(currentPos, lastPoint, mode) {
                 if (mode === 'free' || !lastPoint) {
                     return currentPos;
@@ -2305,6 +2220,11 @@
                 return currentPos;
             }
 
+            /**
+             * Gestisce il click del mouse quando lo strumento muro è attivo.
+             * Aggiunge un punto al muro corrente.
+             * @param {MouseEvent} e - L'evento click.
+             */
             function handleWallClick(e) {
                 e.stopPropagation();
 
@@ -2314,6 +2234,7 @@
                     y: (e.clientY - canvasRect.top) / zoom
                 };
 
+                // Applica correzione ortogonale/diagonale se non è il primo punto
                 if (currentWallPoints.length > 0) {
                     const lastPoint = currentWallPoints[currentWallPoints.length - 1];
                     clickPos = getCorrectedPoint(clickPos, lastPoint, wallDrawingModeSelect.value);
@@ -2322,7 +2243,7 @@
                 const snappedPoint = findSnapPoint(clickPos);
                 const finalPos = snappedPoint || clickPos;
 
-                if (currentWallPoints.length === 0) {
+                if (currentWallPoints.length === 0) { // Primo punto di un nuovo muro
                     wallCounter++;
                     currentWallId = `wall_${wallCounter}`;
                     const newWall = {
@@ -2333,7 +2254,7 @@
                     aree[currentAreaIndex].walls.push(newWall);
                     currentWallPoints = newWall.points;
                     document.addEventListener('mousemove', handleWallMove);
-                } else {
+                } else { // Punti successivi
                     currentWallPoints.push(finalPos);
                 }
 
@@ -2341,6 +2262,10 @@
                 drawWalls();
             }
 
+            /**
+             * Gestisce il movimento del mouse per l'anteprima del segmento di muro.
+             * @param {MouseEvent} e - L'evento mousemove.
+             */
             function handleWallMove(e) {
                 if (currentWallPoints.length === 0) return;
                 const canvasRect = canvas.getBoundingClientRect();
@@ -2350,16 +2275,21 @@
                 };
                 const lastPoint = currentWallPoints[currentWallPoints.length - 1];
                 const correctedPos = getCorrectedPoint(movePos, lastPoint, wallDrawingModeSelect.value);
-                drawWalls(correctedPos);
+                drawWalls(correctedPos); // Ridisegna con la linea di anteprima
             }
 
+            /**
+             * Termina il disegno del muro corrente.
+             * @param {boolean} record - Se true, registra lo stato finale.
+             */
             function finishCurrentWall(record = true) {
                 if (!currentWallId) return;
 
                 const wallIndex = aree[currentAreaIndex].walls.findIndex(w => w.id === currentWallId);
+                // Se il muro ha meno di 2 punti, è invalido e viene rimosso
                 if (wallIndex > -1 && aree[currentAreaIndex].walls[wallIndex].points.length < 2) {
                     aree[currentAreaIndex].walls.splice(wallIndex, 1);
-                    record = false; // Non registrare se il muro non è valido
+                    record = false;
                     undo(); // Annulla lo stato iniziale della creazione del muro
                 }
 
@@ -2372,6 +2302,10 @@
                 drawWalls();
             }
 
+            /**
+             * Disegna tutti i muri dell'area corrente sull'elemento SVG.
+             * @param {object} previewPoint - Punto opzionale per disegnare una linea di anteprima.
+             */
             function drawWalls(previewPoint = null) {
                 wallCanvas.innerHTML = '';
                 wallLabelsContainer.innerHTML = '';
@@ -2383,9 +2317,10 @@
                 const pixelsPerMeter = area.pixelsPerMeter || 100;
                 const svgNS = 'http://www.w3.org/2000/svg';
 
+                // Funzione interna per creare le etichette delle lunghezze
                 const createLabel = (p1, p2) => {
                     const lengthPx = Math.hypot(p2.x - p1.x, p2.y - p1.y);
-                    if (lengthPx < pixelsPerMeter * 0.2) return;
+                    if (lengthPx < pixelsPerMeter * 0.2) return; // Non mostrare etichette troppo piccole
 
                     const lengthM = (lengthPx / pixelsPerMeter).toFixed(2);
                     const label = document.createElement('div');
@@ -2396,6 +2331,7 @@
                     wallLabelsContainer.appendChild(label);
                 };
 
+                // Disegna i muri esistenti
                 walls.forEach(wall => {
                     if (!wall.points || wall.points.length < 2) return;
 
@@ -2416,6 +2352,7 @@
                     }
                 });
 
+                // Disegna la linea di anteprima se presente
                 if (previewPoint && currentWallPoints.length > 0) {
                     const lastPoint = currentWallPoints[currentWallPoints.length - 1];
                     const thicknessCm = parseInt(wallThicknessInput.value) || 20;
@@ -2434,53 +2371,13 @@
                 }
             }
 
-            function getClosestWallId(clickPos) {
-                const area = aree[currentAreaIndex];
-                if (!area || !area.walls) return null;
+            // ================================================================= //
+            // GESTIONE LIBRERIA E ELEMENTI PERSONALIZZATI                       //
+            // ================================================================= //
 
-                const clickTolerance = 10 / zoom; // Tolleranza in pixel
-                let closestWall = null;
-                let minDistance = Infinity;
-
-                for (const wall of area.walls) {
-                    if (!wall.points || wall.points.length < 2) continue;
-                    for (let i = 0; i < wall.points.length - 1; i++) {
-                        const p1 = wall.points[i];
-                        const p2 = wall.points[i + 1];
-                        const distance = pointToLineSegmentDistance(clickPos, p1, p2);
-                        if (distance < minDistance) {
-                            minDistance = distance;
-                            closestWall = wall.id;
-                        }
-                    }
-                }
-
-                return (minDistance < clickTolerance) ? closestWall : null;
-            }
-
-            function pointToLineSegmentDistance(p, v, w) {
-                const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2;
-                if (l2 === 0) return Math.hypot(p.x - v.x, p.y - v.y);
-                let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
-                t = Math.max(0, Math.min(1, t));
-                const projection = {
-                    x: v.x + t * (w.x - v.x),
-                    y: v.y + t * (w.y - v.y)
-                };
-                return Math.hypot(p.x - projection.x, p.y - projection.y);
-            }
-
-            wallToolBtn.addEventListener('click', () => toggleWallTool());
-
-            function findElementDataByType(type) {
-                if (type === 'zone') return null;
-                for (const group of customGroups) {
-                    const found = group.elements.find(el => el.type === type);
-                    if (found) return found;
-                }
-                return null;
-            }
-
+            /**
+             * Inizializza i gruppi di elementi predefiniti.
+             */
             function initDefaultGroups() {
                 customGroups = [
                     {
@@ -2573,6 +2470,9 @@
                 ];
             }
 
+            /**
+             * Renderizza l'intera libreria di elementi nella toolbar.
+             */
             function renderToolbar() {
                 dynamicToolbarContent.innerHTML = '';
                 customGroups.forEach(group => {
@@ -2607,74 +2507,9 @@
                 updateGroupSelect();
             }
 
-            dynamicToolbarContent.addEventListener('click', function (e) {
-                e.stopPropagation();
-                const target = e.target;
-                if (target.classList.contains('delete-element-btn')) {
-                    recordState();
-                    const elementType = target.dataset.elementType;
-                    const elData = findElementDataByType(elementType);
-                    if (confirm(`Sei sicuro di voler eliminare l'elemento "${elData.name}"? Verrà rimosso anche dall'area di lavoro.`)) {
-                        document.querySelectorAll(`.placed-element[data-type="${elementType}"]`).forEach(elOnCanvas => {
-                            if (elOnCanvas === selectedElement) deselectAll();
-                            elOnCanvas.remove();
-                        });
-                        for (const group of customGroups) {
-                            const elIndex = group.elements.findIndex(el => el.type === elementType);
-                            if (elIndex > -1) {
-                                group.elements.splice(elIndex, 1);
-                                break;
-                            }
-                        }
-                        renderToolbar();
-                        updateTotalCost();
-                        recordState();
-                    }
-                } else if (target.classList.contains('delete-group-btn')) {
-                    const groupName = target.dataset.groupName;
-                    const groupIndex = customGroups.findIndex(g => g.name === groupName);
-                    if (groupIndex > -1) {
-                        const group = customGroups[groupIndex];
-                        if (group.elements.length > 0) {
-                            alert('Non puoi eliminare un gruppo che contiene elementi. Rimuovili prima.');
-                            return;
-                        }
-                        if (confirm(`Sei sicuro di voler eliminare il gruppo "${groupName}"?`)) {
-                            customGroups.splice(groupIndex, 1);
-                            renderToolbar();
-                        }
-                    }
-                }
-            });
-
-            function updateTotalCost() {
-                let totalCost = 0;
-                document.querySelectorAll('.placed-element:not(.is-zone)').forEach(el => {
-                    totalCost += parseFloat(el.dataset.cost) || 0;
-                });
-                document.getElementById('total-cost-display').textContent = `${totalCost.toFixed(2)} €`;
-            }
-
-            function updateLightEffect(element) {
-                element.style.boxShadow = '';
-                const isNightMode = document.body.classList.contains('night-mode');
-                const isLightSource = element.dataset.isLightSource === 'true';
-                if (isNightMode && isLightSource) {
-                    const lumens = parseFloat(element.dataset.lumens) || 0;
-                    if (lumens <= 0) return;
-                    const LUMEN_TO_PIXEL_RATIO = 0.15;
-                    const lightRadius = lumens * LUMEN_TO_PIXEL_RATIO;
-                    const spreadRadius = lightRadius / 3;
-                    const innerGlow = `0 0 ${lightRadius / 2}px ${spreadRadius / 2}px rgba(255, 250, 220, 0.7)`;
-                    const outerGlow = `0 0 ${lightRadius}px ${spreadRadius}px rgba(255, 245, 200, 0.4)`;
-                    element.style.boxShadow = `${innerGlow}, ${outerGlow}`;
-                }
-            }
-
-            function updateLightEffectOnAllElements() {
-                document.querySelectorAll('.placed-element').forEach(el => updateLightEffect(el));
-            }
-
+            /**
+             * Aggiorna il menu a tendina per la selezione dei gruppi personalizzati.
+             */
             function updateGroupSelect() {
                 const select = document.getElementById('group-select');
                 const currentValue = select.value;
@@ -2690,50 +2525,15 @@
                 select.value = currentValue || (select.options.length > 0 ? select.options.value : '');
             }
 
-            document.getElementById('add-group-btn').addEventListener('click', function () {
-                const name = document.getElementById('new-group-name').value.trim();
-                if (!name) return;
-                if (customGroups.some(g => g.name.toLowerCase() === name.toLowerCase())) {
-                    alert('Un gruppo con questo nome esiste già.');
-                    return;
-                }
-                customGroups.push({ name, elements: [], isCustom: true });
-                renderToolbar();
-                document.getElementById('new-group-name').value = '';
-            });
 
-            document.getElementById('add-element-btn').addEventListener('click', function () {
-                const groupSelect = document.getElementById('group-select');
-                if (!groupSelect.value) {
-                    alert('Devi prima creare un gruppo personalizzato in cui inserire il nuovo elemento.');
-                    return;
-                }
-                const groupIdx = parseInt(groupSelect.value);
-                const name = document.getElementById('new-element-name').value.trim();
-                const icon = document.getElementById('new-element-icon-select').value;
-                if (!name) {
-                    alert('Inserisci un nome per il nuovo elemento.');
-                    return;
-                }
-                const type = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-                if (findElementDataByType(type)) {
-                    alert('Un elemento con un nome simile esiste già. Scegli un nome diverso.');
-                    return;
-                }
-                customGroups[groupIdx].elements.unshift({
-                    type, name, icon,
-                    width: 80, height: 80,
-                    isCustom: true,
-                    cost: 0,
-                    bgColor: '#e0e0e0',
-                    imageUrl: '',
-                    isLightSource: false,
-                    lumens: 0
-                });
-                renderToolbar();
-                document.getElementById('new-element-name').value = '';
-            });
+            // ================================================================= //
+            // GESTIONE AREE DI LAVORO                                           //
+            // ================================================================= //
 
+            /**
+             * Salva lo stato visivo corrente del canvas (elementi e loro proprietà)
+             * nell'oggetto 'aree' in memoria.
+             */
             function saveCurrentAreaState() {
                 if (currentAreaIndex < 0 || !aree[currentAreaIndex]) return;
 
@@ -2759,9 +2559,15 @@
                 });
             }
 
+            /**
+             * Carica i dati di un'area specifica nel canvas e nell'interfaccia.
+             * @param {number} index - L'indice dell'area da caricare.
+             * @param {boolean} resetHistory - Se true, pulisce la history di undo/redo.
+             */
             function loadArea(index, resetHistory = true) {
                 if (index < 0 || index >= aree.length) return;
 
+                // Salva lo stato dell'area corrente prima di cambiarla
                 if (currentAreaIndex !== index && currentAreaIndex > -1) {
                     saveCurrentAreaState();
                 }
@@ -2772,6 +2578,7 @@
                 if (!areaData.walls) areaData.walls = [];
                 if (!areaData.elements) areaData.elements = [];
 
+                // Aggiorna i controlli dell'interfaccia
                 document.getElementById('width-input').value = areaData.widthMeters;
                 document.getElementById('height-input').value = areaData.heightMeters;
                 document.getElementById('pixels-meter-input').value = areaData.pixelsPerMeter;
@@ -2783,8 +2590,9 @@
                 canvas.innerHTML = '';
                 deselectAll();
 
-                updateCanvasSize(); // Chiamata PRIMA di creare gli elementi
+                updateCanvasSize(); // Cruciale: aggiorna le dimensioni PRIMA di posizionare gli elementi
 
+                // Ricrea gli elementi e i muri
                 areaData.elements.forEach(elData => {
                     createPlacedElement({
                         ...elData,
@@ -2798,14 +2606,18 @@
                 drawWalls();
                 renderAreaList();
 
+                // Gestisce la history
                 if (resetHistory) {
                     undoStack = [];
                     redoStack = [];
-                    recordState();
+                    recordState(); // Crea il primo stato per la nuova area
                 }
                 updateUndoRedoButtons();
             }
 
+            /**
+             * Aggiorna la lista delle aree nella toolbar.
+             */
             function renderAreaList() {
                 const list = document.getElementById('area-list');
                 list.innerHTML = '';
@@ -2867,6 +2679,11 @@
                 });
             }
 
+            /**
+             * Crea una nuova area di lavoro con impostazioni di default.
+             * @param {string} name - Il nome della nuova area.
+             * @param {boolean} load - Se true, carica la nuova area immediatamente.
+             */
             function createNewArea(name, load = false) {
                 const newArea = {
                     name: name,
@@ -2885,94 +2702,15 @@
                 }
             }
 
-            document.getElementById('add-area-btn').addEventListener('click', () => {
-                const nameInput = document.getElementById('new-area-name');
-                const name = nameInput.value.trim();
-                if (name) {
-                    createNewArea(name, true);
-                    nameInput.value = '';
-                } else {
-                    alert('Inserisci un nome per la nuova area.');
-                }
-            });
 
-            document.querySelectorAll('.toolbar-section-header').forEach(header => {
-                header.addEventListener('click', () => {
-                    const section = header.parentElement;
-                    const isActive = section.classList.contains('active');
+            // ================================================================= //
+            // SALVATAGGIO, CARICAMENTO E INIZIALIZZAZIONE                       //
+            // ================================================================= //
 
-                    document.querySelectorAll('.toolbar-section').forEach(s => s.classList.remove('active'));
-
-                    if (!isActive) {
-                        section.classList.add('active');
-                    }
-                });
-            });
-
-            let draggedIndex = null;
-            const areaList = document.getElementById('area-list');
-
-            areaList.addEventListener('dragstart', (e) => {
-                const target = e.target.closest('.area-list-item');
-                if (!target) return;
-                draggedIndex = parseInt(target.dataset.index);
-                e.target.classList.add('dragging');
-            });
-
-            areaList.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                const target = e.target.closest('.area-list-item');
-                if (!target || target.dataset.index == draggedIndex) return;
-
-                document.querySelectorAll('.area-list-item').forEach(item => {
-                    item.classList.remove('drag-over-top', 'drag-over-bottom');
-                });
-
-                const rect = target.getBoundingClientRect();
-                const offset = e.clientY - rect.top - (rect.height / 2);
-                if (offset < 0) {
-                    target.classList.add('drag-over-top');
-                } else {
-                    target.classList.add('drag-over-bottom');
-                }
-            });
-
-            areaList.addEventListener('dragleave', (e) => {
-                e.target.closest('.area-list-item')?.classList.remove('drag-over-top', 'drag-over-bottom');
-            });
-
-            areaList.addEventListener('drop', (e) => {
-                e.preventDefault();
-                const target = e.target.closest('.area-list-item');
-                if (target === null || draggedIndex === null) return;
-
-                recordState();
-                let targetIndex = parseInt(target.dataset.index);
-                const rect = target.getBoundingClientRect();
-                const offset = e.clientY - rect.top - (rect.height / 2);
-
-                const activeAreaName = aree[currentAreaIndex].name;
-                const [draggedItem] = aree.splice(draggedIndex, 1);
-
-                if (offset < 0) {
-                    aree.splice(targetIndex, 0, draggedItem);
-                } else {
-                    aree.splice(targetIndex + 1, 0, draggedItem);
-                }
-
-                currentAreaIndex = aree.findIndex(a => a.name === activeAreaName);
-                renderAreaList();
-                recordState();
-            });
-
-            areaList.addEventListener('dragend', (e) => {
-                document.querySelectorAll('.area-list-item').forEach(item => {
-                    item.classList.remove('dragging', 'drag-over-top', 'drag-over-bottom');
-                });
-                draggedIndex = null;
-            });
-
-            // --- NUOVA LOGICA DI INIZIALIZZAZIONE ---
+            /**
+             * Carica un intero progetto da un oggetto dati (proveniente da un file JSON).
+             * @param {object} data - L'oggetto del progetto da caricare.
+             */
             function loadProjectState(data) {
                 // 1. Carica le definizioni degli elementi
                 initDefaultGroups();
@@ -2998,6 +2736,10 @@
                 }
             }
 
+            /**
+             * Funzione principale che avvia l'applicazione.
+             * Inizializza i gruppi di elementi di default, popola la toolbar e crea la prima area di lavoro.
+             */
             function initializeApp() {
                 initDefaultGroups();
                 renderToolbar();
@@ -3005,7 +2747,569 @@
                 createNewArea("Area Principale", true);
             }
 
-            // Esegui l'inizializzazione di default all'avvio
+            // ================================================================= //
+            // FUNZIONI DI UTILITÀ E CALCOLO                                     //
+            // ================================================================= //
+
+            /**
+             * Trova l'ID del muro più vicino a un dato punto.
+             * @param {object} clickPos - Le coordinate del punto.
+             * @returns {string|null} L'ID del muro o null se nessuno è abbastanza vicino.
+             */
+            function getClosestWallId(clickPos) {
+                const area = aree[currentAreaIndex];
+                if (!area || !area.walls) return null;
+
+                const clickTolerance = 10 / zoom; // Tolleranza in pixel
+                let closestWall = null;
+                let minDistance = Infinity;
+
+                for (const wall of area.walls) {
+                    if (!wall.points || wall.points.length < 2) continue;
+                    for (let i = 0; i < wall.points.length - 1; i++) {
+                        const p1 = wall.points[i];
+                        const p2 = wall.points[i + 1];
+                        const distance = pointToLineSegmentDistance(clickPos, p1, p2);
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            closestWall = wall.id;
+                        }
+                    }
+                }
+
+                return (minDistance < clickTolerance) ? closestWall : null;
+            }
+
+            /**
+             * Calcola la distanza minima tra un punto P e un segmento di linea [V, W].
+             * @param {object} p - Il punto {x, y}.
+             * @param {object} v - Il primo estremo del segmento {x, y}.
+             * @param {object} w - Il secondo estremo del segmento {x, y}.
+             * @returns {number} La distanza calcolata.
+             */
+            function pointToLineSegmentDistance(p, v, w) {
+                const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2;
+                if (l2 === 0) return Math.hypot(p.x - v.x, p.y - v.y);
+                let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+                t = Math.max(0, Math.min(1, t));
+                const projection = {
+                    x: v.x + t * (w.x - v.x),
+                    y: v.y + t * (w.y - v.y)
+                };
+                return Math.hypot(p.x - projection.x, p.y - projection.y);
+            }
+
+            /**
+             * Trova la definizione di un elemento dal suo tipo (ID stringa).
+             * @param {string} type - Il tipo di elemento da cercare.
+             * @returns {object|null} La definizione dell'elemento o null se non trovato.
+             */
+            function findElementDataByType(type) {
+                if (type === 'zone') return null;
+                for (const group of customGroups) {
+                    const found = group.elements.find(el => el.type === type);
+                    if (found) return found;
+                }
+                return null;
+            }
+
+            /**
+             * Calcola e aggiorna il costo totale di tutti gli elementi nell'area corrente.
+             */
+            function updateTotalCost() {
+                let totalCost = 0;
+                document.querySelectorAll('.placed-element:not(.is-zone)').forEach(el => {
+                    totalCost += parseFloat(el.dataset.cost) || 0;
+                });
+                document.getElementById('total-cost-display').textContent = `${totalCost.toFixed(2)} €`;
+            }
+
+            // ================================================================= //
+            // EFFETTI VISIVI (MODALITÀ NOTTE, 3D)                               //
+            // ================================================================= //
+
+            /**
+             * Applica o rimuove l'effetto di luce a un elemento in base alla modalità notte
+             * e alle sue proprietà (isLightSource, lumens).
+             * @param {HTMLElement} element - L'elemento a cui applicare l'effetto.
+             */
+            function updateLightEffect(element) {
+                element.style.boxShadow = '';
+                const isNightMode = document.body.classList.contains('night-mode');
+                const isLightSource = element.dataset.isLightSource === 'true';
+                if (isNightMode && isLightSource) {
+                    const lumens = parseFloat(element.dataset.lumens) || 0;
+                    if (lumens <= 0) return;
+                    const LUMEN_TO_PIXEL_RATIO = 0.15;
+                    const lightRadius = lumens * LUMEN_TO_PIXEL_RATIO;
+                    const spreadRadius = lightRadius / 3;
+                    const innerGlow = `0 0 ${lightRadius / 2}px ${spreadRadius / 2}px rgba(255, 250, 220, 0.7)`;
+                    const outerGlow = `0 0 ${lightRadius}px ${spreadRadius}px rgba(255, 245, 200, 0.4)`;
+                    element.style.boxShadow = `${innerGlow}, ${outerGlow}`;
+                }
+            }
+
+            /**
+             * Applica l'effetto luce a tutti gli elementi sul canvas.
+             * Chiamato quando si attiva/disattiva la modalità notte.
+             */
+            function updateLightEffectOnAllElements() {
+                document.querySelectorAll('.placed-element').forEach(el => updateLightEffect(el));
+            }
+
+
+            // ================================================================= //
+            // EVENT LISTENERS                                                   //
+            // ================================================================= //
+
+            // --- Listener per bottoni di controllo ---
+            document.getElementById('clear-all-btn').addEventListener('click', () => clearAll(true));
+            document.getElementById('delete-selected-btn').addEventListener('click', deleteSelected);
+            document.getElementById('duplicate-selected-btn').addEventListener('click', duplicateSelected);
+            document.getElementById('bring-to-front-btn').addEventListener('click', bringToFront);
+            document.getElementById('send-to-back-btn').addEventListener('click', sendToBack);
+
+            // --- Listener per effetti visivi e modalità ---
+            document.getElementById('toggle-3d-btn').addEventListener('click', function () {
+                canvasContainer.classList.toggle('view-3d');
+                applyPanAndZoom();
+            });
+            document.getElementById('night-mode-btn').addEventListener('click', function () {
+                document.body.classList.toggle('night-mode');
+                updateLightEffectOnAllElements();
+            });
+            document.getElementById('highlight-grid-btn').addEventListener('click', function () {
+                canvas.classList.toggle('grid-strong');
+            });
+
+            // --- Listener per interazioni con il canvas ---
+            canvas.addEventListener('dragover', handleDragOver);
+            canvas.addEventListener('drop', handleDrop);
+            canvas.addEventListener('click', handleCanvasClick);
+            canvas.addEventListener('dblclick', handleCanvasDblClick);
+
+            // --- Listener per impostazioni globali dell'area ---
+            document.getElementById('width-input').addEventListener('input', function () {
+                if (currentAreaIndex > -1) aree[currentAreaIndex].widthMeters = parseFloat(this.value);
+                updateAreaDisplay();
+                updateCanvasSize();
+            });
+            document.getElementById('height-input').addEventListener('input', function () {
+                if (currentAreaIndex > -1) aree[currentAreaIndex].heightMeters = parseFloat(this.value);
+                updateAreaDisplay();
+                updateCanvasSize();
+            });
+            document.getElementById('pixels-meter-input').addEventListener('input', function (e) {
+                if (currentAreaIndex > -1) aree[currentAreaIndex].pixelsPerMeter = parseInt(e.target.value);
+                updateCanvasSize();
+                drawWalls();
+                document.querySelectorAll('.placed-element').forEach(el => {
+                    updateElementContent(el);
+                });
+            });
+            document.getElementById('canvas-bg-select').addEventListener('change', function (e) {
+                recordState();
+                if (currentAreaIndex > -1) aree[currentAreaIndex].canvasBackground = e.target.value;
+                canvas.style.background = e.target.value;
+            });
+
+            // Aggiunta gestione undo/redo agli input principali
+            addUndoRedoToInput(document.getElementById('width-input'));
+            addUndoRedoToInput(document.getElementById('height-input'));
+            addUndoRedoToInput(document.getElementById('pixels-meter-input'));
+            addUndoRedoToInput(wallThicknessInput);
+
+            // --- Listener per salvataggio e caricamento ---
+            document.getElementById('save-image-btn').addEventListener('click', function () {
+                deselectAll();
+                toggleMeasureTool(false);
+                toggleWallTool(false);
+
+                setTimeout(() => {
+                    html2canvas(designWrapper, {
+                        backgroundColor: canvas.style.background || null,
+                        scale: 2,
+                        ignoreElements: (element) => element.id === 'measure-visuals' || element.classList.contains('resize-handle')
+                    }).then(function (canvasImg) {
+                        const link = document.createElement('a');
+                        link.download = `${aree[currentAreaIndex].name.replace(/\s+/g, '_') || 'design'}.png`;
+                        link.href = canvasImg.toDataURL('image/png');
+                        link.click();
+                    });
+                }, 100);
+            });
+            document.getElementById('save-json-btn').addEventListener('click', function () {
+                saveCurrentAreaState();
+
+                const dataToSave = {
+                    aree: aree,
+                    customElementDefinitions: customGroups.filter(g => g.isCustom).map(group => {
+                        return {
+                            name: group.name,
+                            isCustom: true,
+                            elements: group.elements.filter(el => el.isCustom)
+                        };
+                    })
+                };
+
+                const blob = new Blob([JSON.stringify(dataToSave, null, 2)], { type: "application/json" });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = "progetto_aree.json";
+                link.click();
+            });
+            document.getElementById('load-json-btn').addEventListener('click', function () {
+                document.getElementById('load-json-input').click();
+            });
+            document.getElementById('load-json-input').addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function (evt) {
+                    try {
+                        const data = JSON.parse(evt.target.result);
+                        if (!confirm('Caricare un nuovo progetto cancellerà il lavoro corrente. Continuare?')) {
+                            e.target.value = null;
+                            return;
+                        }
+                        loadProjectState(data);
+                    } catch (error) {
+                        alert('Errore: il file selezionato non è un progetto valido.');
+                        console.error("Errore nel parsing del JSON:", error);
+                    } finally {
+                        e.target.value = null; // Resetta l'input per ricaricare lo stesso file
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            // --- Listener per Zoom e Pan ---
+            const zoomInput = document.getElementById('zoom-value');
+            const zoomInBtn = document.getElementById('zoom-in');
+            const zoomOutBtn = document.getElementById('zoom-out');
+
+            function applyZoom() { applyPanAndZoom(); }
+
+            zoomInput.addEventListener('input', function () {
+                zoom = Math.max(0.2, Math.min(3, parseFloat(zoomInput.value) || 1));
+                zoomInput.value = zoom;
+                applyZoom();
+            });
+            zoomInBtn.addEventListener('click', function () {
+                zoom = Math.min(3, zoom + 0.25);
+                zoom = Math.round(zoom * 100) / 100;
+                zoomInput.value = zoom;
+                applyZoom();
+            });
+            zoomOutBtn.addEventListener('click', function () {
+                zoom = Math.max(0.2, zoom - 0.25);
+                zoom = Math.round(zoom * 100) / 100;
+                zoomInput.value = zoom;
+                applyZoom();
+            });
+
+            canvasContainer.addEventListener('mousedown', function (e) {
+                if (e.target === canvasContainer) { // Attiva il pan solo cliccando sullo sfondo
+                    isPanning = true;
+                    panStart.x = e.clientX - panOffset.x;
+                    panStart.y = e.clientY - panOffset.y;
+                    canvasContainer.style.cursor = "grabbing";
+                }
+            });
+            document.addEventListener('mousemove', function (e) {
+                if (isPanning) {
+                    panOffset.x = e.clientX - panStart.x;
+                    panOffset.y = e.clientY - panStart.y;
+                    applyPanAndZoom();
+                }
+            });
+            document.addEventListener('mouseup', function () {
+                if (isPanning) {
+                    isPanning = false;
+                    canvasContainer.style.cursor = "default";
+                }
+            });
+
+            // --- Listener per Undo/Redo ---
+            undoBtn.addEventListener('click', undo);
+            redoBtn.addEventListener('click', redo);
+
+            // --- Listener per creazione elementi e gruppi custom ---
+            document.getElementById('add-group-btn').addEventListener('click', function () {
+                const name = document.getElementById('new-group-name').value.trim();
+                if (!name) return;
+                if (customGroups.some(g => g.name.toLowerCase() === name.toLowerCase())) {
+                    alert('Un gruppo con questo nome esiste già.');
+                    return;
+                }
+                customGroups.push({ name, elements: [], isCustom: true });
+                renderToolbar();
+                document.getElementById('new-group-name').value = '';
+            });
+
+            document.getElementById('add-element-btn').addEventListener('click', function () {
+                const groupSelect = document.getElementById('group-select');
+                if (!groupSelect.value) {
+                    alert('Devi prima creare un gruppo personalizzato in cui inserire il nuovo elemento.');
+                    return;
+                }
+                const groupIdx = parseInt(groupSelect.value);
+                const name = document.getElementById('new-element-name').value.trim();
+                const icon = document.getElementById('new-element-icon-select').value;
+                if (!name) {
+                    alert('Inserisci un nome per il nuovo elemento.');
+                    return;
+                }
+                const type = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                if (findElementDataByType(type)) {
+                    alert('Un elemento con un nome simile esiste già. Scegli un nome diverso.');
+                    return;
+                }
+                customGroups[groupIdx].elements.unshift({
+                    type, name, icon,
+                    width: 80, height: 80,
+                    isCustom: true,
+                    cost: 0,
+                    bgColor: '#e0e0e0',
+                    imageUrl: '',
+                    isLightSource: false,
+                    lumens: 0
+                });
+                renderToolbar();
+                document.getElementById('new-element-name').value = '';
+            });
+
+            // --- Listener per gestione aree ---
+            document.getElementById('add-area-btn').addEventListener('click', () => {
+                const nameInput = document.getElementById('new-area-name');
+                const name = nameInput.value.trim();
+                if (name) {
+                    createNewArea(name, true);
+                    nameInput.value = '';
+                } else {
+                    alert('Inserisci un nome per la nuova area.');
+                }
+            });
+
+            // --- Listener per espansione/chiusura sezioni toolbar ---
+            document.querySelectorAll('.toolbar-section-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const section = header.parentElement;
+                    const isActive = section.classList.contains('active');
+                    document.querySelectorAll('.toolbar-section').forEach(s => s.classList.remove('active'));
+                    if (!isActive) {
+                        section.classList.add('active');
+                    }
+                });
+            });
+
+            // --- Listener per il drag & drop della lista aree ---
+            let draggedIndex = null;
+            const areaList = document.getElementById('area-list');
+
+            areaList.addEventListener('dragstart', (e) => {
+                const target = e.target.closest('.area-list-item');
+                if (!target) return;
+                draggedIndex = parseInt(target.dataset.index);
+                e.target.classList.add('dragging');
+            });
+            areaList.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const target = e.target.closest('.area-list-item');
+                if (!target || target.dataset.index == draggedIndex) return;
+
+                document.querySelectorAll('.area-list-item').forEach(item => {
+                    item.classList.remove('drag-over-top', 'drag-over-bottom');
+                });
+
+                const rect = target.getBoundingClientRect();
+                const offset = e.clientY - rect.top - (rect.height / 2);
+                if (offset < 0) {
+                    target.classList.add('drag-over-top');
+                } else {
+                    target.classList.add('drag-over-bottom');
+                }
+            });
+            areaList.addEventListener('dragleave', (e) => {
+                e.target.closest('.area-list-item')?.classList.remove('drag-over-top', 'drag-over-bottom');
+            });
+            areaList.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const target = e.target.closest('.area-list-item');
+                if (target === null || draggedIndex === null) return;
+
+                recordState();
+                let targetIndex = parseInt(target.dataset.index);
+                const rect = target.getBoundingClientRect();
+                const offset = e.clientY - rect.top - (rect.height / 2);
+
+                const activeAreaName = aree[currentAreaIndex].name;
+                const [draggedItem] = aree.splice(draggedIndex, 1);
+
+                if (offset < 0) {
+                    aree.splice(targetIndex, 0, draggedItem);
+                } else {
+                    aree.splice(targetIndex + 1, 0, draggedItem);
+                }
+
+                currentAreaIndex = aree.findIndex(a => a.name === activeAreaName);
+                renderAreaList();
+                recordState();
+            });
+            areaList.addEventListener('dragend', (e) => {
+                document.querySelectorAll('.area-list-item').forEach(item => {
+                    item.classList.remove('dragging', 'drag-over-top', 'drag-over-bottom');
+                });
+                draggedIndex = null;
+            });
+
+            // --- Listener per Strumenti di Disegno ---
+            measureToolBtn.addEventListener('click', () => toggleMeasureTool());
+            wallToolBtn.addEventListener('click', () => toggleWallTool());
+            document.getElementById('add-zone-btn').addEventListener('click', function () {
+                toggleWallTool(false);
+                toggleMeasureTool(false);
+                isDrawingZone = true;
+                this.classList.add('active-tool');
+                canvas.style.cursor = 'crosshair';
+                deselectAll();
+            });
+
+            // --- Listener specifici per disegno zone ---
+            canvas.addEventListener('mousedown', function (e) {
+                if (!isDrawingZone || e.target !== canvas) return;
+                e.stopPropagation();
+
+                recordState();
+                const canvasRect = canvas.getBoundingClientRect();
+                const mouseX = (e.clientX - canvasRect.left) / zoom;
+                const mouseY = (e.clientY - canvasRect.top) / zoom;
+                zoneDrawStart.x = mouseX;
+                zoneDrawStart.y = mouseY;
+                elementCounter++;
+                currentDrawingZone = document.createElement('div');
+                currentDrawingZone.className = 'placed-element is-zone';
+                currentDrawingZone.style.left = zoneDrawStart.x + 'px';
+                currentDrawingZone.style.top = zoneDrawStart.y + 'px';
+                currentDrawingZone.style.width = '0px';
+                currentDrawingZone.style.height = '0px';
+                currentDrawingZone.dataset.isZone = 'true';
+                currentDrawingZone.dataset.zoneName = 'Nuova Zona';
+                currentDrawingZone.dataset.type = 'zone';
+                currentDrawingZone.dataset.id = `element_${elementCounter}`;
+                canvas.appendChild(currentDrawingZone);
+            }, true);
+            document.addEventListener('mousemove', function (e) {
+                if (isDrawingZone && currentDrawingZone) {
+                    const canvasRect = canvas.getBoundingClientRect();
+                    const mouseX = (e.clientX - canvasRect.left) / zoom;
+                    const mouseY = (e.clientY - canvasRect.top) / zoom;
+                    const newWidth = Math.abs(mouseX - zoneDrawStart.x);
+                    const newHeight = Math.abs(mouseY - zoneDrawStart.y);
+                    const newLeft = Math.min(mouseX, zoneDrawStart.x);
+                    const newTop = Math.min(mouseY, zoneDrawStart.y);
+                    currentDrawingZone.style.width = newWidth + 'px';
+                    currentDrawingZone.style.height = newHeight + 'px';
+                    currentDrawingZone.style.left = newLeft + 'px';
+                    currentDrawingZone.style.top = newTop + 'px';
+                }
+            });
+            document.addEventListener('mouseup', function (e) {
+                if (!isDrawingZone || !currentDrawingZone) return;
+
+                if (currentDrawingZone.offsetWidth < 10 || currentDrawingZone.offsetHeight < 10) {
+                    currentDrawingZone.remove();
+                    undo();
+                } else {
+                    const contentWrapper = document.createElement('div');
+                    contentWrapper.className = 'element-content-wrapper';
+                    currentDrawingZone.appendChild(contentWrapper);
+                    currentDrawingZone.addEventListener('mousedown', startDragging);
+                    updateElementContent(currentDrawingZone);
+                    selectElement(currentDrawingZone);
+                    recordState();
+                }
+                const btn = document.getElementById('add-zone-btn');
+                btn.classList.remove('active-tool');
+                canvas.style.cursor = 'default';
+                isDrawingZone = false;
+                currentDrawingZone = null;
+            });
+            canvas.addEventListener('dblclick', function (e) {
+                const targetZone = e.target.closest('.placed-element.is-zone');
+                if (!targetZone) return;
+
+                const contentWrapper = targetZone.querySelector('.element-content-wrapper');
+                if (!contentWrapper || contentWrapper.querySelector('input')) return;
+                const currentName = targetZone.dataset.zoneName;
+                recordState();
+                contentWrapper.innerHTML = `<input type="text" class="zone-name-input" value="${currentName}" />`;
+                const input = contentWrapper.querySelector('input');
+                input.focus();
+                input.select();
+                const finishEditing = () => {
+                    targetZone.dataset.zoneName = input.value.trim() || 'Zona senza nome';
+                    updateElementContent(targetZone);
+                    recordState();
+                    input.removeEventListener('blur', finishEditing);
+                    input.removeEventListener('keydown', handleKey);
+                };
+                const handleKey = (ev) => {
+                    if (ev.key === 'Enter') finishEditing();
+                    else if (ev.key === 'Escape') {
+                        input.value = currentName;
+                        finishEditing();
+                    }
+                };
+                input.addEventListener('blur', finishEditing);
+                input.addEventListener('keydown', handleKey);
+            });
+
+            // --- Listener per scorciatoie da tastiera ---
+            document.addEventListener('keydown', function (e) {
+                if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') return;
+
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (undoBtn.disabled) return;
+                    undo();
+                } else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
+                    e.preventDefault();
+                    if (redoBtn.disabled) return;
+                    redo();
+                }
+
+                else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); deleteSelected(); }
+                else if (e.key === 'd' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); duplicateSelected(); }
+                else if (e.key === 'PageUp' && selectedElement) { e.preventDefault(); bringToFront(); }
+                else if (e.key === 'PageDown' && selectedElement) { e.preventDefault(); sendToBack(); }
+                else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    if (isDrawingWall) {
+                        finishCurrentWall(false);
+                        undo(); // Rimuove lo stato iniziale del disegno del muro
+                    } else if (isMeasuring) {
+                        toggleMeasureTool(false);
+                    } else if (isDrawingZone) {
+                        if (currentDrawingZone) currentDrawingZone.remove();
+                        const btn = document.getElementById('add-zone-btn');
+                        btn.classList.remove('active-tool');
+                        canvas.style.cursor = 'default';
+                        isDrawingZone = false;
+                        currentDrawingZone = null;
+                        undo();
+                    }
+                    else {
+                        deselectAll();
+                    }
+                }
+            });
+
+
+            // ================================================================= //
+            // AVVIO APPLICAZIONE                                                //
+            // ================================================================= //
+
             initializeApp();
 
         });
