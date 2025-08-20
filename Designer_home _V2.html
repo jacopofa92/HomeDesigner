@@ -839,6 +839,57 @@
                 box-shadow: none;
             }
         }
+
+        /* ===== INIZIO MODIFICHE RESPONSIVE ===== */
+        @media (max-width: 992px) {
+
+            /* Impostazioni per il pannello superiore (settings-panel) */
+            .settings-panel {
+                flex-wrap: nowrap;
+                /* Impedisce agli elementi di andare a capo */
+                overflow-x: auto;
+                /* Abilita lo scorrimento orizzontale se necessario */
+                justify-content: flex-start;
+                /* Allinea gli elementi a sinistra per uno scorrimento naturale */
+            }
+
+            .settings-group,
+            .settings-group-left,
+            .settings-group-center,
+            .settings-group-right {
+                flex-shrink: 0;
+                /* Evita che i gruppi di elementi si restringano */
+            }
+
+            /* Impostazioni per la barra dei controlli inferiore (controls) */
+            .controls {
+                flex-wrap: nowrap;
+                /* Impedisce ai gruppi di bottoni di andare a capo */
+                overflow-x: auto;
+                /* Abilita lo scorrimento orizzontale */
+                justify-content: flex-start;
+                /* Allinea i gruppi a sinistra per uno scorrimento naturale */
+            }
+
+            .control-group {
+                flex-shrink: 0;
+                /* Evita che i gruppi di bottoni si restringano */
+            }
+
+            /* Stile opzionale per migliorare l'aspetto della scrollbar */
+            .settings-panel::-webkit-scrollbar,
+            .controls::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .settings-panel::-webkit-scrollbar-thumb,
+            .controls::-webkit-scrollbar-thumb {
+                background-color: rgba(0, 0, 0, 0.25);
+                border-radius: 3px;
+            }
+        }
+
+        /* ===== FINE MODIFICHE RESPONSIVE ===== */
     </style>
 </head>
 
