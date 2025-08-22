@@ -416,6 +416,38 @@
             overflow: visible;
         }
 
+        #wall-cursor-preview {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+            transform: translate(-50%, -50%);
+            /* Centro il cursore sul punto del mouse */
+        }
+
+        #wall-cursor-preview::before,
+        #wall-cursor-preview::after {
+            content: '';
+            position: absolute;
+            background-color: rgba(255, 0, 0, 0.7);
+            top: 50%;
+            left: 50%;
+        }
+
+        #wall-cursor-preview::before {
+            /* Linea verticale */
+            width: 1px;
+            height: 100%;
+            transform: translate(-50%, -50%);
+        }
+
+        #wall-cursor-preview::after {
+            /* Linea orizzontale */
+            width: 100%;
+            height: 1px;
+            transform: translate(-50%, -50%);
+        }
+
         #wall-canvas {
             z-index: 5;
             pointer-events: none;
@@ -1003,6 +1035,7 @@
                     <div id="design-wrapper">
                         <div id="ruler-top" class="ruler"></div>
                         <div id="ruler-left" class="ruler"></div>
+                        <div id="wall-cursor-preview"></div>
                         <svg id="wall-canvas" class="drawing-visuals"></svg>
                         <div id="wall-labels-container" class="drawing-visuals"></div>
                         <div class="canvas" id="canvas"></div>
@@ -1126,6 +1159,7 @@
             const measureVisualsElement = document.getElementById('measure-visuals');
             const wallToolBtn = document.getElementById('wall-tool-btn');
             const wallCanvas = document.getElementById('wall-canvas');
+            const wallCursorPreview = document.getElementById('wall-cursor-preview');
             const wallLabelsContainer = document.getElementById('wall-labels-container');
             const wallThicknessInput = document.getElementById('wall-thickness-input');
             const wallDrawingModeSelect = document.getElementById('wall-drawing-mode');
@@ -1348,6 +1382,19 @@
                     tick.style.height = (heightRemainder * pixelsPerMeter) + 'px';
                     rulerLeft.appendChild(tick);
                 }
+            }
+
+            /**
+             * Aggiorna la dimensione del cursore personalizzato per i muri in base allo spessore e alla scala.
+             */
+            function updateWallCursorSize() {
+                if (currentAreaIndex < 0 || !wallCursorPreview) return;
+                const thicknessCm = parseFloat(wallThicknessInput.value) || 20;
+                const pixelsPerMeter = aree[currentAreaIndex].pixelsPerMeter || 100;
+                const sizePx = (thicknessCm / 100) * pixelsPerMeter;
+
+                wallCursorPreview.style.width = sizePx + 'px';
+                wallCursorPreview.style.height = sizePx + 'px';
             }
 
             /**
@@ -2209,11 +2256,13 @@
                         recordState(); // Salva stato prima di iniziare un nuovo muro
                     }
                     wallToolBtn.classList.add('active-tool');
-                    canvas.style.cursor = 'crosshair';
+                    canvasContainer.style.cursor = 'none';
+                    updateWallCursorSize();
                 } else {
                     if (wasDrawing) finishCurrentWall(false); // Se si disattiva, finalizza il muro corrente
                     wallToolBtn.classList.remove('active-tool');
-                    canvas.style.cursor = 'default';
+                    canvasContainer.style.cursor = 'default';
+                    if (wallCursorPreview) wallCursorPreview.style.display = 'none';
                 }
             }
 
@@ -2667,6 +2716,27 @@
             }
 
             /**
+             * Duplica un'area esistente.
+             * @param {number} index - L'indice dell'area da duplicare.
+             */
+            function duplicateArea(index) {
+                if (index < 0 || index >= aree.length) return;
+
+                recordState(); // Salva lo stato prima della duplicazione
+
+                const originalArea = aree[index];
+                // Creiamo una copia profonda dell'area originale
+                const duplicatedArea = JSON.parse(JSON.stringify(originalArea));
+
+                // Modifichiamo il nome della nuova area
+                duplicatedArea.name = `${originalArea.name} Copia`;
+
+                // Aggiungiamo la nuova area all'array e la carichiamo
+                aree.push(duplicatedArea);
+                loadArea(aree.length - 1, true); // true per resettare la history per la nuova area
+            }
+
+            /**
              * Aggiorna la lista delle aree nella toolbar.
              */
             function renderAreaList() {
@@ -2687,6 +2757,14 @@
 
                     const buttonsDiv = document.createElement('div');
                     buttonsDiv.className = 'area-item-buttons';
+
+                    const duplicateBtn = document.createElement('button');
+                    duplicateBtn.textContent = '📋';
+                    duplicateBtn.title = 'Duplica';
+                    duplicateBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        duplicateArea(index);
+                    };
 
                     const renameBtn = document.createElement('button');
                     renameBtn.textContent = '✏️';
@@ -2717,6 +2795,7 @@
                         }
                     };
 
+                    buttonsDiv.appendChild(duplicateBtn);
                     buttonsDiv.appendChild(renameBtn);
                     buttonsDiv.appendChild(deleteBtn);
                     item.appendChild(buttonsDiv);
@@ -2953,6 +3032,9 @@
             document.getElementById('pixels-meter-input').addEventListener('input', function (e) {
                 if (currentAreaIndex > -1) aree[currentAreaIndex].pixelsPerMeter = parseInt(e.target.value);
                 updateCanvasSize();
+                if (isDrawingWall) {
+                    updateWallCursorSize();
+                }
                 drawWalls();
                 document.querySelectorAll('.placed-element').forEach(el => {
                     updateElementContent(el);
@@ -2968,6 +3050,11 @@
             addUndoRedoToInput(document.getElementById('width-input'));
             addUndoRedoToInput(document.getElementById('height-input'));
             addUndoRedoToInput(document.getElementById('pixels-meter-input'));
+            wallThicknessInput.addEventListener('input', () => {
+                if (isDrawingWall) {
+                    updateWallCursorSize();
+                }
+            });
             addUndoRedoToInput(wallThicknessInput);
 
             // --- Listener per salvataggio e caricamento ---
@@ -3059,12 +3146,37 @@
                 applyZoom();
             });
 
+            canvasContainer.addEventListener('mousemove', function (e) {
+                if (isDrawingWall && !isPanning) {
+                    const canvasRect = canvas.getBoundingClientRect();
+                    const x = (e.clientX - canvasRect.left) / zoom;
+                    const y = (e.clientY - canvasRect.top) / zoom;
+
+                    // Il cursore è figlio di design-wrapper. Il canvas è spostato di 20px.
+                    const cursorLeft = x + 20;
+                    const cursorTop = y + 20;
+
+                    wallCursorPreview.style.display = 'block';
+                    wallCursorPreview.style.left = cursorLeft + 'px';
+                    wallCursorPreview.style.top = cursorTop + 'px';
+                }
+            });
+
+            canvasContainer.addEventListener('mouseleave', function (e) {
+                if (isDrawingWall) {
+                    wallCursorPreview.style.display = 'none';
+                }
+            });
+
             canvasContainer.addEventListener('mousedown', function (e) {
                 if (e.target === canvasContainer) { // Attiva il pan solo cliccando sullo sfondo
                     isPanning = true;
                     panStart.x = e.clientX - panOffset.x;
                     panStart.y = e.clientY - panOffset.y;
                     canvasContainer.style.cursor = "grabbing";
+                    if (isDrawingWall) {
+                        wallCursorPreview.style.display = 'none';
+                    }
                 }
             });
             document.addEventListener('mousemove', function (e) {
@@ -3074,10 +3186,24 @@
                     applyPanAndZoom();
                 }
             });
-            document.addEventListener('mouseup', function () {
+            document.addEventListener('mouseup', function (e) {
                 if (isPanning) {
                     isPanning = false;
-                    canvasContainer.style.cursor = "default";
+                    if (isDrawingWall) {
+                        canvasContainer.style.cursor = 'none';
+                        // Mostra di nuovo il cursore personalizzato nella posizione corrente del mouse
+                        // per evitare che scompaia dopo il pan fino al prossimo movimento.
+                        const canvasRect = canvas.getBoundingClientRect();
+                        const x = (e.clientX - canvasRect.left) / zoom;
+                        const y = (e.clientY - canvasRect.top) / zoom;
+                        const cursorLeft = x + 20;
+                        const cursorTop = y + 20;
+                        wallCursorPreview.style.display = 'block';
+                        wallCursorPreview.style.left = cursorLeft + 'px';
+                        wallCursorPreview.style.top = cursorTop + 'px';
+                    } else {
+                        canvasContainer.style.cursor = 'default';
+                    }
                 }
             });
 
