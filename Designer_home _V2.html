@@ -1007,7 +1007,9 @@
 
                 <div class="toolbar-section active">
                     <div class="toolbar-section-header">Libreria Elementi</div>
-                    <div class="toolbar-section-content" id="dynamic-toolbar-content">
+                    <div class="toolbar-section-content">
+                        <input type="text" id="element-search-input" placeholder="Cerca elemento...">
+                        <div id="dynamic-toolbar-content"></div>
                     </div>
                 </div>
 
@@ -2572,37 +2574,46 @@
 
             /**
              * Renderizza l'intera libreria di elementi nella toolbar.
+             * @param {string} [searchTerm=''] - Il termine da usare per filtrare gli elementi.
              */
-            function renderToolbar() {
+            function renderToolbar(searchTerm = '') {
                 dynamicToolbarContent.innerHTML = '';
-                customGroups.forEach(group => {
-                    const h3 = document.createElement('h4');
-                    h3.textContent = group.name;
-                    dynamicToolbarContent.appendChild(h3);
+                const normalizedSearchTerm = searchTerm.trim().toLowerCase();
 
-                    const grid = document.createElement('div');
-                    grid.className = 'element-grid';
-                    group.elements.forEach(el => {
-                        const item = document.createElement('div');
-                        item.className = 'element-item';
-                        item.dataset.type = el.type;
-                        item.dataset.width = el.width;
-                        item.dataset.height = el.height;
-                        item.innerHTML = `<div class="element-icon">${el.icon}</div><div class="element-name">${el.name}</div>`;
-                        item.setAttribute('draggable', 'true');
-                        if (el.isCustom) {
-                            const deleteBtn = document.createElement('button');
-                            deleteBtn.className = 'delete-btn delete-element-btn';
-                            deleteBtn.innerHTML = '🗑️';
-                            deleteBtn.title = 'Elimina elemento';
-                            deleteBtn.dataset.elementType = el.type;
-                            item.appendChild(deleteBtn);
-                        }
-                        item.addEventListener('dragstart', handleDragStart);
-                        item.addEventListener('click', handleElementClick);
-                        grid.appendChild(item);
-                    });
-                    dynamicToolbarContent.appendChild(grid);
+                customGroups.forEach(group => {
+                    const filteredElements = group.elements.filter(el =>
+                        el.name.toLowerCase().includes(normalizedSearchTerm)
+                    );
+
+                    if (filteredElements.length > 0) {
+                        const h3 = document.createElement('h4');
+                        h3.textContent = group.name;
+                        dynamicToolbarContent.appendChild(h3);
+
+                        const grid = document.createElement('div');
+                        grid.className = 'element-grid';
+                        filteredElements.forEach(el => {
+                            const item = document.createElement('div');
+                            item.className = 'element-item';
+                            item.dataset.type = el.type;
+                            item.dataset.width = el.width;
+                            item.dataset.height = el.height;
+                            item.innerHTML = `<div class="element-icon">${el.icon}</div><div class="element-name">${el.name}</div>`;
+                            item.setAttribute('draggable', 'true');
+                            if (el.isCustom) {
+                                const deleteBtn = document.createElement('button');
+                                deleteBtn.className = 'delete-btn delete-element-btn';
+                                deleteBtn.innerHTML = '🗑️';
+                                deleteBtn.title = 'Elimina elemento';
+                                deleteBtn.dataset.elementType = el.type;
+                                item.appendChild(deleteBtn);
+                            }
+                            item.addEventListener('dragstart', handleDragStart);
+                            item.addEventListener('click', handleElementClick);
+                            grid.appendChild(item);
+                        });
+                        dynamicToolbarContent.appendChild(grid);
+                    }
                 });
                 updateGroupSelect();
             }
@@ -3254,6 +3265,10 @@
                 });
                 renderToolbar();
                 document.getElementById('new-element-name').value = '';
+            });
+
+            document.getElementById('element-search-input').addEventListener('input', (e) => {
+                renderToolbar(e.target.value);
             });
 
             // --- Listener per gestione aree ---
