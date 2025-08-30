@@ -1,10 +1,46 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="refresh" content="0; url=Designer_home _V2.html" />
     <title>Redirecting...</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+        font-family: Arial, sans-serif;
+        color: #333;
+      }
+      .loader-container {
+        text-align: center;
+      }
+      .loader {
+        border: 8px solid #e0e0e0; /* Light grey */
+        border-top: 8px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1.5s linear infinite;
+        margin: 0 auto 20px;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
   </head>
   <body>
-    <p>Redirecting to <a href="homeDesigner.html">Designer_home _V2.html</a></p>
+    <div class="loader-container">
+      <div class="loader"></div>
+      <p>Loading Designer...</p>
+    </div>
+
+    <script>
+      setTimeout(function() {
+        window.location.href = 'Designer_home _V2.html';
+      }, 3000); // 3 seconds
+    </script>
   </body>
 </html>
